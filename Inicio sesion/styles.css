@@ -57,7 +57,7 @@ select {
 
 /* Apariencia del botón de envío */
 button.btn-login {
-    background-color: #555; /* Gris oscuro */
+    background-color: rgba(0, 34, 184, 0.651); /* Gris oscuro */
     color: #fff;
     padding: 10px;
     border: none;
