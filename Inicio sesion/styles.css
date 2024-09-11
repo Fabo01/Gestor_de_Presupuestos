@@ -1,0 +1,150 @@
+/* Reset básico para evitar diferencias entre navegadores */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0e0e0; /* Gris claro para el fondo */
+    color: #333; /* Gris oscuro para el texto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Estilo del contenedor del formulario */
+.login-container {
+    background-color: #f9f9f9; /* Fondo de formulario en gris muy claro */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Estilo de encabezado del formulario */
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #333; /* Gris oscuro */
+}
+
+/* Estilos para las etiquetas de los campos */
+label {
+    color: #555; /* Gris intermedio */
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+/* Estilo de los campos de texto y selectores */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #999; /* Borde gris */
+    border-radius: 5px;
+    background-color: #f5f5f5; /* Fondo gris claro */
+    font-size: 14px;
+    color: #333; /* Color de texto gris oscuro */
+}
+
+/* Apariencia del botón de envío */
+button.btn-login {
+    background-color: #555; /* Gris oscuro */
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button.btn-login:hover {
+    background-color: #777; /* Gris más claro en hover */
+}
+
+/* Estilo del texto de "¿Ya tienes una cuenta?" */
+.signup-text {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+}
+
+/* Enlace estilizado en el texto de redirección */
+.signup-link {
+    color: orange; /* Naranja para el enlace */
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilo para la barra superior */
+.navbar {
+    width: 100%;
+    background-color: #333; /* Barra en gris oscuro */
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Estilo del menú desplegable */
+.menu {
+    display: flex;
+    align-items: center;
+}
+
+/* Botón del menú */
+.menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding-right: 10px;
+}
+
+.app-title {
+    color: white;
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+/* Estilo para el menú desplegable */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    background-color: #333; /* Gris oscuro para el fondo */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.dropdown-menu a {
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background-color: #555; /* Gris más claro al hacer hover */
+}
+
+.show {
+    display: block;
+}
