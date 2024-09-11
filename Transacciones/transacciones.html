@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Transacciones</title>
+</head>
+
+<body>
+    <h1>Transacciones</h1>
+
+    <div class="container">
+
+        <form id="transaction-form">
+            <input type= "text" id ="transaction-desc" placeholder="Descripcion" required>
+            <input type="number" id="transaction-mount" placeholder="Dinero" required>
+            <button type="submit">Añadir</button>
+
+            <div class="transaction-type">
+                <label for="transaction-type">Tipo:</label>
+                <select id="transaction-type" required>
+                    <option value="Ingreso">Ingreso</option>
+                    <option value="Gasto">Gasto</option>
+                </select>
+            </div>
+        <h2> Tus Transacciones:</h2>
+        <ul id="transaction-list">
+            <li>peo</li>
+        </ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
