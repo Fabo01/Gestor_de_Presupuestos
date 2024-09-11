@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestión de Categorías</h1>
+        <div class="form-group">
+            <label for="categoryName">Nombre de la categoría</label>
+            <input type="text" id="categoryName" placeholder="Ingrese el nombre de la categoría">
+        </div>
+        <div class="form-group">
+            <label for="categoryType">Tipo de categoría</label>
+            <input type="text" id="categoryType" placeholder="Ingrese el tipo de la categoría">
+        </div>
+        <button class="btn" onclick="createCategory()">Crear Categoría</button>
+        <button class="btn btn-secondary" onclick="loadCategory()">Cargar Categoría</button>
+        <button class="btn btn-secondary" onclick="modifyCategory()">Modificar Categoría</button>
+        <button class="btn btn-secondary" onclick="deleteCategory()">Eliminar Categoría</button>
+
+        <div class="category-list">
+            <h2>Lista de Categorías</h2>
+            <ul id="categoryList"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
