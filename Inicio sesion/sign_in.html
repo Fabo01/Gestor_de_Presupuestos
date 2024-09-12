@@ -38,34 +38,6 @@
             <label for="confirm-password">Confirmar Contraseña:</label>
             <input type="password" id="confirm-password" name="confirm-password" required>
 
-            <!-- <label for="bank">Banco:</label>
-            <select id="bank" name="bank" required>
-                <option value="" disabled selected>Selecciona tu banco</option>
-                <option value="banco_chile">Banco de Chile</option>
-                <option value="bci">BCI</option>
-                <option value="banco_estado">Banco Estado</option>
-                <option value="santander">Santander</option>
-                <option value="itau">Itaú</option>
-                <option value="scotiabank">Scotiabank</option>
-                <option value="falabella">Banco Falabella</option>
-                <option value="ripley">Banco Ripley</option>
-                <option value="security">Banco Security</option>
-                <option value="otros">Otros</option>
-            </select>
-
-            <label for="account-type">Tipo de cuenta:</label>
-            <select id="account-type" name="account-type" required>
-                <option value="" disabled selected>Selecciona el tipo de cuenta</option>
-                <option value="corriente">Cuenta Corriente</option>
-                <option value="vista">Cuenta Vista</option>
-                <option value="rut">Cuenta RUT</option>
-                <option value="ahorro">Cuenta de Ahorro</option>
-                <option value="otros">Otros</option>
-            </select>
-
-            <label for="account-number">Número de Cuenta:</label>
-            <input type="text" id="account-number" name="account-number" required> -->
-
             <button type="submit" class="btn-login">Crear Cuenta</button>
         </form>
 
@@ -97,9 +69,6 @@
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirm-password").value;
-            // const bank = document.getElementById("bank").value;
-            // const accountType = document.getElementById("account-type").value;
-            // const accountNumber = document.getElementById("account-number").value;
 
             if (!username || !email || !password || !confirmPassword || !bank || !accountType || !accountNumber) {
                 alert("Todos los campos son obligatorios.");
