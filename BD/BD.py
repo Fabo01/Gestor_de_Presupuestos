@@ -1,7 +1,11 @@
 import sqlite3
+import os
 
 def crearbd():
-    conn = sqlite3.connect('BD/GestorPresupuestos.db')
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATABASE = os.path.join(BASE_DIR, 'GestorPresupuestos.db')
+
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()  
 
     # Crear tabla de Cuentas de banco
@@ -30,7 +34,7 @@ def crearbd():
         (ID_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
         ID_Presupuesto INTEGER,
         nombre TEXT,
-        tipo TEXTL,
+        tipo TEXT,
         FOREIGN KEY (ID_Presupuesto) REFERENCES Presupuestos(ID_Presupuesto))''')
 
     # Crear tabla de Transacciones
@@ -93,3 +97,6 @@ def resetbd():
 
     conn.commit()
     conn.close()
+
+if __name__ == "__main__":
+    crearbd()
