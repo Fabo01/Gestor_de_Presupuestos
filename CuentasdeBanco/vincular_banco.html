@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuentas bancarias</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <form action="{{ url_for('vincular_banco') }}" method="post">
+        <label for="nombrecuenta">Crea un nombre para tu cuenta.</label>
+        <input type="text" id="nombrecuenta" name="nombrecuenta" required placeholder="Escribe un nombre para tu cuenta">
+
+        <label for="banco">Banco:</label>
+            <select id="banco" name="banco" required>
+                <option value="" disabled selected>Selecciona tu banco.</option>
+                <option value="Banco_Chile">Banco de Chile</option>
+                <option value="BCI">BCI</option>
+                <option value="Banco_Estado">Banco Estado</option>
+                <option value="Santander">Santander</option>
+                <option value="Itau">Itaú</option>
+                <option value="Scotiabank">Scotiabank</option>
+                <option value="Falabella">Banco Falabella</option>
+                <option value="Ripley">Banco Ripley</option>
+                <option value="Security">Banco Security</option>
+                <option value="Otro">Otro</option>
+            </select>
+        <button type="submit">Crear cuenta</button>
+    </form>
+    <a href="{{ url_for('index') }}">Regresar</a>
+
+</body>
+</html>

@@ -11,16 +11,14 @@ def crearbd():
     # Crear tabla de Cuentas de banco
     cursor.execute('''CREATE TABLE IF NOT EXISTS Cuentas_de_banco 
         (ID_cuentabanco INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
+        ID_usuario INTEGER,
         banco TEXT)''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS Usuario 
         (ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-        ID_cuentabanco INTEGER,
         name TEXT,
-        password TEXT,
-        fecha_registro DATE,
-        FOREIGN KEY (ID_cuentabanco) REFERENCES Cuentas_de_banco(ID_cuentabanco))''')
+        email TEXT UNIQUE,
+        password TEXT)''')
 
     # Crear tabla de Presupuestos
     cursor.execute('''CREATE TABLE IF NOT EXISTS Presupuestos 
@@ -56,12 +54,9 @@ def insertarbd():
     conn = sqlite3.connect('BD/GestorPresupuestos.db')
     cursor = conn.cursor() 
 
-    cursor.execute('''INSERT INTO Cuentas_de_banco (name, banco)
-        VALUES ('Cuenta Personal', 'Banco Nacional')''')
-
     # Insertar un usuario
-    cursor.execute('''INSERT INTO Usuario (ID_cuentabanco, name, password, fecha_registro)
-        VALUES (1, 'Juan Perez', '1234', '2024-09-07')''')
+    cursor.execute('''INSERT INTO Usuario (ID_usuario, name, email, password)
+        VALUES (1, 'Esban', 'Itan.daniel.fr@gmail.com', '123')''')
 
     # Insertar una categoría
     cursor.execute('''INSERT INTO Categoria (nombre, tipo)
