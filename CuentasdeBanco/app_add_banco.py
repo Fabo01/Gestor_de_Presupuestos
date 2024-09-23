@@ -45,12 +45,5 @@ def vincular_banco():
 
     return render_template('vicular_banco.html')
 
-# Cerrar Sesion
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    flash('Has cerrado sesión exitosamente.')
-    return redirect(url_for('login'))
-
 if __name__ == '__main__':
     app.run(debug=True)
