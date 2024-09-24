@@ -18,22 +18,22 @@ def crearbd():
         (ID_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         email TEXT UNIQUE,
-        password TEXT)''')
+        password TEXT,
+        token_recuperacion TEXT)''')
 
     # Crear tabla de Presupuestos
     cursor.execute('''CREATE TABLE IF NOT EXISTS Presupuestos 
         (ID_Presupuesto INTEGER PRIMARY KEY AUTOINCREMENT,
         ID_categoria INTEGER,
         gasto_mensual INTEGER,
+        saldo_restante INTEGER,
         FOREIGN KEY (ID_categoria) REFERENCES Categoria(ID_categoria))''')
 
     # Crear tabla de Categorías
     cursor.execute('''CREATE TABLE IF NOT EXISTS Categoria 
         (ID_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
-        ID_Presupuesto INTEGER,
-        nombre TEXT,
-        tipo TEXT,
-        FOREIGN KEY (ID_Presupuesto) REFERENCES Presupuestos(ID_Presupuesto))''')
+        ID_cuentabanco INTEGER,
+        nombre TEXT)''')
 
     # Crear tabla de Transacciones
     cursor.execute('''CREATE TABLE IF NOT EXISTS Transacciones 
@@ -45,30 +45,6 @@ def crearbd():
         Monto INTEGER,
         FOREIGN KEY (ID_Cuentabanco) REFERENCES Cuentas_de_banco(ID_cuentabanco),
         FOREIGN KEY (ID_Categoria) REFERENCES Categoria(ID_categoria))''')
-
-
-    conn.commit()
-    conn.close()
-
-def insertarbd():
-    conn = sqlite3.connect('BD/GestorPresupuestos.db')
-    cursor = conn.cursor() 
-
-    # Insertar un usuario
-    cursor.execute('''INSERT INTO Usuario (ID_usuario, name, email, password)
-        VALUES (1, 'Esban', 'Itan.daniel.fr@gmail.com', '123')''')
-
-    # Insertar una categoría
-    cursor.execute('''INSERT INTO Categoria (nombre, tipo)
-        VALUES ('Alimentos', 'Egreso')''')
-
-    # Insertar un presupuesto para esa categoría
-    cursor.execute('''INSERT INTO Presupuestos (ID_categoria, gasto_mensual)
-        VALUES (1, 60000)''')
-
-    # Insertar una transacción
-    cursor.execute('''INSERT INTO Transacciones (ID_Cuentabanco, ID_Categoria, desc, fecha, Monto)
-        VALUES (1, 1, 'Compra supermercado', '2024-09-07', 20000)''')
 
     conn.commit()
     conn.close()

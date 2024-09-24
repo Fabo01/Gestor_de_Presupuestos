@@ -6,18 +6,101 @@ app = Flask(__name__)
 app.secret_key = 'C0ntr4s3ñ4. d3- v10s'
 
 def conectar_bd():
-    return sqlite3.connect('\BD/GestorPresupuestos.db')
+    return sqlite3.connect('BD/GestorPresupuestos.db')
+
+# Registro de Usuario
+@app.route('/registro', methods=['GET', 'POST'])
+def registro():
+    if request.method == 'POST':
+        nombre = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = conectar_bd()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute('INSERT INTO Usuario (name, email, password) VALUES (?, ?, ?)', (nombre, email, password))
+            conn.commit()
+            flash('Usuario registrado exitosamente. Inicia sesión.')
+            return redirect(url_for('login'))
+        except sqlite3.IntegrityError:
+            flash('El correo electrónico ya está en uso.')
+        finally:
+            conn.close()
+
+    return render_template('sign_in.html')
+
+# Inicio de Sesion
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        conn = conectar_bd()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Usuario WHERE email = ? AND password = ?', (email, password))
+        user = cursor.fetchone()
+        conn.close()
+
+        if user:
+            session['user_id'] = user[0]
+            session['user'] = user[1]
+            flash('Inicio de sesión exitoso')
+            return redirect(url_for('index'))
+        else:
+            flash('Correo o contraseña incorrectos.')
+
+    return render_template('login.html')
+
+# Restablecimiento de contraseña
+@app.route('/recuperar_password', methods=['GET', 'POST'])
+def recuperar_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        
+        conn = conectar_bd()
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT * FROM Usuario WHERE email = ?', (email,))
+        user = cursor.fetchone()
+
+        if user:
+            return render_template('recuperar_password.html', email=email)
+        else:
+            flash('No se encontró ninguna cuenta con ese correo electrónico.')
+            return redirect(url_for('recuperar_password'))
+
+    return render_template('recuperar_password.html')
+
+@app.route('/restablecer_password', methods=['POST'])
+def restablecer_password():
+    email = request.form['email']
+    nueva_password = request.form['password']
+    confirmar_password = request.form['confirm_password']
+
+    if nueva_password != confirmar_password:
+        flash('Las contraseñas no coinciden.')
+        return redirect(url_for('recuperar_password'))
+
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE Usuario SET password = ? WHERE email = ?', (nueva_password, email))
+    conn.commit()
+    conn.close()
+
+    flash('Tu contraseña ha sido actualizada. Ya puedes iniciar sesión.')
+    return redirect(url_for('login'))
 
 # Seccion principal
 @app.route('/')
 def index():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
     conn = conectar_bd()
     cursor = conn.cursor()
-
-    cursor.execute('SELECT * FROM Usuario WHERE email = ? AND password = ?', ('Itan.daniel.fr@gmail.com', '123'))
-    user = cursor.fetchone()
-    session['user_id'] = user[0]
 
     cursor.execute('SELECT * FROM Cuentas_de_banco WHERE ID_usuario = ?', (session['user_id'],))
     cuentas = cursor.fetchall()
@@ -51,6 +134,26 @@ def vincular_banco():
         return redirect(url_for('index'))
 
     return render_template('vincular_banco.html')
+
+# Añadir nueva categoria enlazada a Banco
+@app.route('/crear_categoria/<int:cuenta_id>', methods=['GET', 'POST'])
+def crear_categoria(cuenta_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        nombre_categoria = request.form['nombre_categoria']
+
+        conn = conectar_bd()
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO Categoria (ID_cuentabanco, nombre) VALUES (?, ?)', (cuenta_id, nombre_categoria))
+        conn.commit()
+        conn.close()
+
+        flash('Categoría creada exitosamente.')
+        return redirect(url_for('index'))
+
+    return render_template('crear_categoria.html', cuenta_id=cuenta_id)
 
 # Añadir Presupuesto enlazado a Categoria
 @app.route('/crear_presupuesto/<int:categoria_id>', methods=['GET', 'POST'])

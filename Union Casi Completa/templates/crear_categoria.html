@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestión de Categorías</h1>
+        <form action="{{ url_for('crear_categoria', cuenta_id=cuenta_id) }}" method="post">
+
+            <label for="categoryName">Nombre de la categoría</label>
+            <input type="text" id="categoryName" placeholder="Ingrese el nombre de la categoría">
+        
+            <button class="btn" type="submit">Crear Categoría</button>
+        </form>
+</body>
+</html>
