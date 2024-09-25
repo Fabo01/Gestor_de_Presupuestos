@@ -251,6 +251,20 @@ def ver_presupuesto(categoria_id):
     
     return render_template('ver_presupuesto.html', presupuesto=presupuesto, transacciones=transacciones, categoria=categoria, banco=banco)
 
+# Graficos aun en construccion
+@app.route('/api/datos')
+def obtener_datos():
+    conn = conectar_bd()
+    cursor = conn.cursor()
+    presupuestos = cursor.execute('SELECT * FROM Presupuestos').fetchall()
+    transacciones = cursor.execute('SELECT * FROM Transacciones').fetchall()
+    conn.close()
+
+    return jsonify({
+        'presupuestos': [dict(p) for p in presupuestos],
+        'transacciones': [dict(t) for t in transacciones]
+    })
+
 # Añadir articulo al Inicio
 @app.route('/crear_articulo', methods=['GET', 'POST'])
 def crear_articulo():
