@@ -6,22 +6,42 @@ document.addEventListener("DOMContentLoaded", function() {
             const presupuestos = data.presupuestos;
             const transacciones = data.transacciones;
 
-            // Crear datos para el gráfico de barras (presupuestos)
-            const categorias = presupuestos.map(p => `Categoría ${p.ID_categoria}`);
-            const saldos = transacciones.map(p => p.saldo_restante);
+            // Crear un mapa para agrupar transacciones por categoría
+            const transaccionesPorCategoria = {};
+            const nombresTransacciones = transacciones.map(t => t.desc);
 
+            transacciones.forEach(transaccion => {
+                const categoriaId = transaccion.ID_Categoria;
+                if (!transaccionesPorCategoria[categoriaId]) {
+                    transaccionesPorCategoria[categoriaId] = [];
+                }
+                transaccionesPorCategoria[categoriaId].push(transaccion.Monto);
+            });
+
+            // Crear datos para las etiquetas (nombres de categorías)
+            const categorias = presupuestos.map(p => `Categoría ${p.nombre}`); // Aquí uso `p.nombre` suponiendo que existe un campo `nombre` en Presupuestos
+
+            // Crear los datasets, uno por cada categoría
+            const datasets = presupuestos.map((presupuesto, index) => {
+                const categoriaId = presupuesto.ID_categoria;
+                const data = transaccionesPorCategoria[categoriaId] || [];
+
+                return {
+                    label: `Transacciones`, // Usar el nombre de la categoría
+                    data: data,  // Monto de las transacciones en esa categoría
+                    backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`,
+                    borderColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 1)`,
+                    borderWidth: 1
+                };
+            });
+
+            // Crear el gráfico de barras
             const ctxBar = document.getElementById('myChart').getContext('2d');
             new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: categorias,
-                    datasets: [{
-                        label: 'Saldo Restante',
-                        data: saldos,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
+                    labels: nombresTransacciones,  // Aquí mostramos las categorías como etiquetas
+                    datasets: datasets   // Aquí incluimos los datasets de transacciones por categoría
                 },
                 options: {
                     scales: {
@@ -31,41 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
             });
-
-            // Crear datos para el gráfico circular de transacciones
-            const transaccionesPorCategoria = transacciones.reduce((acc, trans) => {
-                if (!acc[trans.ID_Categoria]) acc[trans.ID_Categoria] = 0;
-                acc[trans.ID_Categoria] += trans.Monto;
-                return acc;
-            }, {});
-
-            const categoriasTrans = Object.keys(transaccionesPorCategoria).map(id => `Categoría ${id}`);
-            const montosTrans = Object.values(transaccionesPorCategoria);
-
-            const ctxPie1 = document.getElementById('pieChart1').getContext('2d');
-            new Chart(ctxPie1, {
-                type: 'pie',
-                data: {
-                    labels: categoriasTrans,
-                    datasets: [{
-                        label: 'Gastos por Categoría',
-                        data: montosTrans,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                }
-            });
         })
         .catch(error => console.error('Error al obtener los datos:', error));
+        
 });

@@ -115,6 +115,22 @@ def index():
     conn.close()
     return render_template('index.html', cuentas=cuentas, categorias=categorias)
 
+# Perfil
+@app.route('/perfil')
+def perfil():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = conectar_bd()
+    cursor = conn.cursor()
+
+    # Obtener los datos del usuario actual
+    cursor.execute('SELECT * FROM Usuario WHERE ID_usuario = ?', (session['user_id'],))
+    usuario = cursor.fetchone()
+    conn.close()
+
+    return render_template('perfil.html', usuario=usuario)
+
 # Seccion de articulos
 @app.route('/inicio')
 def inicio():
