@@ -29,7 +29,7 @@ def registro():
         finally:
             conn.close()
 
-    return render_template('registro.html')
+    return render_template('sign_in.html')
 
 # Inicio de Sesion
 @app.route('/login', methods=['GET', 'POST'])

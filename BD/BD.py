@@ -45,6 +45,14 @@ def crearbd():
         Monto INTEGER,
         FOREIGN KEY (ID_Cuentabanco) REFERENCES Cuentas_de_banco(ID_cuentabanco),
         FOREIGN KEY (ID_Categoria) REFERENCES Categoria(ID_categoria))''')
+    
+    # Crear tabla Articulos
+    cursor.execute('''CREATE TABLE IF NOT EXISTS Articulos (
+        ID_articulo INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        contenido TEXT NOT NULL,
+        autor TEXT NOT NULL,
+        fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP)''')
 
     conn.commit()
     conn.close()
