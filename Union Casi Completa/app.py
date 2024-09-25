@@ -29,7 +29,7 @@ def registro():
         finally:
             conn.close()
 
-    return render_template('sign_in.html')
+    return render_template('registro.html')
 
 # Inicio de Sesion
 @app.route('/login', methods=['GET', 'POST'])
@@ -114,6 +114,11 @@ def index():
 
     conn.close()
     return render_template('index.html', cuentas=cuentas, categorias=categorias)
+
+# Seccion de articulos
+@app.route('/inicio')
+def inicio():
+    return render_template('inicio.html')
 
 # Añadir nuevo banco enlazado a Usuario
 @app.route('/vincular_banco', methods=['GET', 'POST'])
@@ -245,6 +250,39 @@ def ver_presupuesto(categoria_id):
     conn.close()
     
     return render_template('ver_presupuesto.html', presupuesto=presupuesto, transacciones=transacciones, categoria=categoria, banco=banco)
+
+# Añadir articulo al Inicio
+@app.route('/crear_articulo', methods=['GET', 'POST'])
+def crear_articulo():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        titulo = request.form['titulo']
+        contenido = request.form['contenido']
+        autor = session['user']
+
+        conn = conectar_bd()
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO Articulos (titulo, contenido, autor) VALUES (?, ?, ?)', (titulo, contenido, autor))
+        conn.commit()
+        conn.close()
+
+        flash('Artículo creado exitosamente.')
+        return redirect(url_for('index'))
+
+    return render_template('crear_articulo.html')
+
+@app.route('/articulos')
+def ver_articulos():
+    conn = conectar_bd()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM Articulos ORDER BY fecha_creacion DESC')
+    articulos = cursor.fetchall()
+
+    conn.close()
+    return render_template('ver_articulos.html', articulos=articulos)
 
 # Cerrar Sesion
 @app.route('/logout')
