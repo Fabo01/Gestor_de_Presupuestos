@@ -40,9 +40,11 @@ def crearbd():
         (ID_trans INTEGER PRIMARY KEY AUTOINCREMENT,
         ID_Cuentabanco INTEGER,
         ID_Categoria INTEGER,
+        ID_Presupuesto INTEGER, 
         desc TEXT,
         fecha DATE,
         Monto INTEGER,
+        FOREIGN KEY (ID_Presupuesto) REFERENCES Presupuestos(ID_Presupuesto),     
         FOREIGN KEY (ID_Cuentabanco) REFERENCES Cuentas_de_banco(ID_cuentabanco),
         FOREIGN KEY (ID_Categoria) REFERENCES Categoria(ID_categoria))''')
     
