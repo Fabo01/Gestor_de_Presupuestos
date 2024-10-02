@@ -267,16 +267,15 @@ def ver_presupuesto(categoria_id):
     
     return render_template('ver_presupuesto.html', presupuesto=presupuesto, transacciones=transacciones, categoria=categoria, banco=banco)
 
-# Graficos aun en construccion
+# Envio de datos en formato JSON para graficos del javascript
 @app.route('/api/datos')
 def obtener_datos():
-    # Obtener el usuario autenticado (puedes usar flask_login o algún sistema de autenticación)
-    usuario_id = session.get('user_id') # Implementa esta función
+
+    usuario_id = session.get('user_id')
     
     conn = conectar_bd()
     cursor = conn.cursor()
 
-    # Obtener las categorías vinculadas al usuario a través del banco
     cursor.execute('''
         SELECT * FROM Categoria
         JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco
@@ -286,7 +285,6 @@ def obtener_datos():
     categoria = cursor.fetchall()
     categorias_columnas = [col[0] for col in cursor.description]
 
-    # Obtener los presupuestos relacionados a las categorías del usuario
     cursor.execute('''
         SELECT * FROM Presupuestos
         JOIN Categoria ON Presupuestos.ID_categoria = Categoria.ID_categoria
@@ -297,7 +295,6 @@ def obtener_datos():
     presupuestos = cursor.fetchall()
     presupuestos_columnas = [col[0] for col in cursor.description]
 
-    # Obtener las transacciones relacionadas a los presupuestos del usuario
     cursor.execute('''
         SELECT * FROM Transacciones
         JOIN Presupuestos ON Transacciones.ID_Presupuesto = Presupuestos.ID_Presupuesto
@@ -312,6 +309,15 @@ def obtener_datos():
 
     conn.close()
 
+    categorias_dict = [dict(zip(categorias_columnas, c)) for c in categoria]
+    presupuestos_dict = [dict(zip(presupuestos_columnas, p)) for p in presupuestos]
+    transacciones_dict = [dict(zip(transacciones_columnas, t)) for t in transacciones]
+
+    return jsonify({
+        'categoria': categorias_dict,
+        'presupuestos': presupuestos_dict,
+        'transacciones': transacciones_dict
+    })
 
 # Añadir articulo al Inicio
 @app.route('/crear_articulo', methods=['GET', 'POST'])

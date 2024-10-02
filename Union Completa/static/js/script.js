@@ -1,3 +1,5 @@
+// Transacciones por Categoria
+
 document.addEventListener("DOMContentLoaded", function() {
     fetch('/api/datos')
         .then(response => response.json())
