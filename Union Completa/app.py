@@ -268,29 +268,50 @@ def ver_presupuesto(categoria_id):
     return render_template('ver_presupuesto.html', presupuesto=presupuesto, transacciones=transacciones, categoria=categoria, banco=banco)
 
 # Graficos aun en construccion
+@app.route('/api/datos')
 def obtener_datos():
+    # Obtener el usuario autenticado (puedes usar flask_login o algún sistema de autenticación)
+    usuario_id = session.get('user_id') # Implementa esta función
+    
     conn = conectar_bd()
     cursor = conn.cursor()
 
-    cursor.execute('SELECT * FROM Presupuestos')
+    # Obtener las categorías vinculadas al usuario a través del banco
+    cursor.execute('''
+        SELECT * FROM Categoria
+        JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco
+        JOIN Usuario ON Cuentas_de_banco.ID_usuario = Usuario.ID_usuario
+        WHERE Usuario.ID_usuario = ?
+    ''', (usuario_id,))
+    categoria = cursor.fetchall()
+    categorias_columnas = [col[0] for col in cursor.description]
+
+    # Obtener los presupuestos relacionados a las categorías del usuario
+    cursor.execute('''
+        SELECT * FROM Presupuestos
+        JOIN Categoria ON Presupuestos.ID_categoria = Categoria.ID_categoria
+        WHERE Categoria.ID_cuentabanco IN (
+            SELECT Cuentas_de_banco.ID_cuentabanco FROM Cuentas_de_banco WHERE Cuentas_de_banco.ID_usuario = ?
+        )
+    ''', (usuario_id,))
     presupuestos = cursor.fetchall()
     presupuestos_columnas = [col[0] for col in cursor.description]
 
-    cursor.execute('SELECT * FROM Transacciones')
+    # Obtener las transacciones relacionadas a los presupuestos del usuario
+    cursor.execute('''
+        SELECT * FROM Transacciones
+        JOIN Presupuestos ON Transacciones.ID_Presupuesto = Presupuestos.ID_Presupuesto
+        WHERE Presupuestos.ID_categoria IN (
+            SELECT Categoria.ID_categoria FROM Categoria
+            JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco
+            WHERE Cuentas_de_banco.ID_usuario = ?
+        )
+    ''', (usuario_id,))
     transacciones = cursor.fetchall()
     transacciones_columnas = [col[0] for col in cursor.description]
 
     conn.close()
 
-    # Convertir resultados a lista de diccionarios
-    presupuestos_dict = [dict(zip(presupuestos_columnas, p)) for p in presupuestos]
-    transacciones_dict = [dict(zip(transacciones_columnas, t)) for t in transacciones]
-
-    # Devolver el JSON
-    return jsonify({
-        'presupuestos': presupuestos_dict,
-        'transacciones': transacciones_dict
-    })
 
 # Añadir articulo al Inicio
 @app.route('/crear_articulo', methods=['GET', 'POST'])
