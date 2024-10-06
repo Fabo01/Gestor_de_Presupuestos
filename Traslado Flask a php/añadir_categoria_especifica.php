@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($count > 0) {
             echo "Error: Ya existe una categoría con este nombre para el banco seleccionado.";
         } else {
-            // Insertar la nueva categoría
             $stmt = $db->prepare("INSERT INTO Categoria (ID_cuentabanco, nombre) VALUES (?, ?)");
             $stmt->bind_param('is', $ID_cuentabanco, $categoria);
 
