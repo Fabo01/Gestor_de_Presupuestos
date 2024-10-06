@@ -1,3 +1,4 @@
+<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
 session_start();
@@ -28,6 +29,7 @@ if (isset($_GET['success'])) {
     }
 }
 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
 <!DOCTYPE html>
 <html lang="es">
@@ -52,9 +54,12 @@ if (isset($_GET['success'])) {
             </nav>
         </header>
 
+<!-------------------------------------------- Codigo php -------------------------------------->
+
     <?php if (!empty($mensaje)): ?>
         <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
     <?php endif; ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
     <main>
         <h2>Mis Cuentas</h2>
@@ -62,6 +67,7 @@ if (isset($_GET['success'])) {
             <a href="añadir_nuevo_banco.php">Añadir Banco</a>
             <ul>
 
+<!-------------------------------------------- Codigo php -------------------------------------->
             <?php
             $stmt = $db->prepare("SELECT ID_cuentabanco, banco FROM Cuentas_de_banco WHERE ID_usuario = ?");
             $stmt->bind_param('i', $_SESSION['user_id']);
@@ -73,6 +79,7 @@ if (isset($_GET['success'])) {
             }
             $stmt->close();
             ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
             </ul>
         </div>
@@ -80,6 +87,8 @@ if (isset($_GET['success'])) {
         <h2>Mis categorías</h2>
         <div class="container-categorias">
             <ul>
+
+<!-------------------------------------------- Codigo php -------------------------------------->
                 <?php
                 $stmt = $db->prepare("SELECT Categoria.nombre, Cuentas_de_banco.banco FROM Categoria 
                                     INNER JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco 
@@ -93,6 +102,7 @@ if (isset($_GET['success'])) {
                 }
                 $stmt->close();
                 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
             </ul>
         </div>
     </main>

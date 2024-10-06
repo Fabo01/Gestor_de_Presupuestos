@@ -1,3 +1,4 @@
+<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
 session_start();
@@ -32,6 +33,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 $stmt->close();
 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -44,6 +47,8 @@ $stmt->close();
     <p>Saldo restante: <?php echo htmlspecialchars($saldo_restante); ?></p>
 
     <ul>
+
+<!-------------------------------------------- Codigo php -------------------------------------->
         <?php
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
@@ -53,6 +58,8 @@ $stmt->close();
             echo "<li>No hay transacciones asociadas a este presupuesto.</li>";
         }
         ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
+
     </ul>
 
     <a href="añadir_transaccion.php?id_presupuesto=<?php echo htmlspecialchars($ID_presupuesto); ?>">Añadir nueva transacción</a>

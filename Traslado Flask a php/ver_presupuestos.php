@@ -1,3 +1,4 @@
+<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
 session_start();
@@ -34,6 +35,8 @@ $presupuesto = $result->fetch_assoc();
 $stmt->close();
 
 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,6 +46,7 @@ $stmt->close();
 <body>
     <h1>Presupuesto para la categoría: <?php echo htmlspecialchars($nombre_categoria); ?></h1>
 
+<!-------------------------------------------- Codigo php -------------------------------------->
     <?php if ($presupuesto): ?>
         <p>Gasto mensual: <?php echo htmlspecialchars($presupuesto['gasto_mensual']); ?></p>
         <p>Saldo restante: <?php echo htmlspecialchars($presupuesto['saldo_restante']); ?></p>
@@ -51,6 +55,7 @@ $stmt->close();
         <p>Esta categoría no tiene un presupuesto asignado.</p>
         <p><a href="añadir_presupuesto.php?id_categoria=<?php echo htmlspecialchars($ID_categoria); ?>">Añadir presupuesto a esta categoría</a></p>
     <?php endif; ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
     <a href="ver_categorias.php?id_banco=<?php echo htmlspecialchars($_GET['id_banco']); ?>">Volver a Categorías</a>
 </body>

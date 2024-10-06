@@ -1,3 +1,4 @@
+<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
 session_start();
@@ -27,6 +28,8 @@ if (!$nombre_banco) {
 }
 
 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -39,6 +42,8 @@ if (!$nombre_banco) {
     <p><a href="añadir_categoria_especifica.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>">Añadir nueva categoría</a></p>
 
     <ul>
+
+<!-------------------------------------------- Codigo php -------------------------------------->
         <?php
         $stmt = $db->prepare("SELECT ID_categoria, nombre FROM Categoria WHERE ID_cuentabanco = ?");
         $stmt->bind_param('i', $ID_cuentabanco);
@@ -50,6 +55,8 @@ if (!$nombre_banco) {
         }
         $stmt->close();
         ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
+
     </ul>
 
     <a href="dashboard.php">Volver al Dashboard</a>

@@ -1,3 +1,4 @@
+<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
 session_start();
@@ -46,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
 <!DOCTYPE html>
 <html lang="es">
@@ -60,13 +62,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <header>
                 <h1 class="main-header">Crear Cuenta</h1>
             </header>
-
+<!-------------------------------------------- Codigo php -------------------------------------->
         <?php if (!empty($mensaje)): ?>
             <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
         <?php endif; ?>
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
+<!---------------------------------------------------------------------------------------------------------------------------->
 
             <main>
                 <form action="register.php" method="POST" class="form-style">
