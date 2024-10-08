@@ -2,13 +2,21 @@
 require 'Conex.inc';
 session_start();
 
+function redirigir($url, $param) {
+    header("Location: {$url}?{$param}");
+    exit();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    redirigir('index.php', 'error=acceso_denegado');
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
     $banco = trim($_POST['banco']);
     $ID_usuario = $_SESSION['user_id'];
 
     if (empty($banco)) {
-        header('Location: dashboard.php?error=banco_vacio');
-        exit();
+        redirigir('dashboard.php', 'error=banco_vacio');
     }
 
     $stmt = $db->prepare("SELECT COUNT(*) FROM Cuentas_de_banco WHERE ID_usuario = ? AND banco = ?");
@@ -19,23 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
     $stmt->close();
 
     if ($count > 0) {
-        header('Location: dashboard.php?error=banco_existente');
-        exit();
+        redirigir('dashboard.php', 'error=banco_existente');
     } else {
         $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (ID_usuario, banco) VALUES (?, ?)");
         $stmt->bind_param('is', $ID_usuario, $banco);
 
         if ($stmt->execute()) {
-            header('Location: dashboard.php?success=banco');
-            exit();
+            redirigir('dashboard.php', 'success=banco');
         } else {
-            header('Location: dashboard.php?error=banco_insert');
-            exit();
+            redirigir('dashboard.php', 'error=fallo_bd');
         }
-        $stmt->close();
     }
 } else {
-    header('Location: dashboard.php');
-    exit();
+    redirigir('dashboard.php', 'error=solicitud_invalida');
 }
 ?>
