@@ -3,23 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Perfil de Usuario</title>
+    <title>Panel de Usuario</title>
+    <link rel="stylesheet" href="\static/perfil.css"> <!-- arreglar ruta si esta mal -->
 </head>
 <body>
-    <header>
-        <h1>Mi Perfil</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h2>Información del Perfil</h2>
-        <p><strong>Nombre:</strong> {{ usuario[1] }}</p>
-        <p><strong>Email:</strong> {{ usuario[2] }}</p>
-    </main>
+
+<header>
+    <div class="logo">Logo</div>
+    <div class="user-info">
+        <span>Boletines</span>
+        <img src="https://via.placeholder.com/40" alt="Usuario">
+    </div>
+</header>
+
+<div class="container">
+    <div class="profile-content">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/100" alt="Perfil">
+            <div class="profile-info">
+                <h2>Juan Perez De las Mercedez</h2>
+                <p>Correo: correoderelleno@email.com</p>
+                <p>Nombre de Usuario: @Usuario</p>
+                <button class="change-photo">Cambiar foto de perfil</button>
+            </div>
+        </div>
+        
+        <div id="dynamicContent">
+            <h3>Bienvenido</h3>
+            <p>Selecciona una opción del panel para comenzar.</p>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <button onclick="loadContent('seguridad')">Seguridad</button>
+        <button onclick="loadContent('personalizacion')">Personalización</button>
+        <button onclick="loadContent('logros')">Logros</button>
+        <button onclick="loadContent('configuracionCuenta')">Configuración de cuenta</button>
+        <button onclick="loadContent('configuracionAhorros')">Configuración de ahorros</button>
+        <button onclick="loadContent('grafico')">Gráfico</button>
+    </div>
+</div>
+
+<script src="\static/js/perfil.js"></script> <!-- arreglar ruta si esta mal -->
 </body>
 </html>
