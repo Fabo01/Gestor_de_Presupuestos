@@ -3,25 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='intro_datos.css') }}">
     <title>Crear Categoría</title>
 </head>
 <body>
-    <header>
-        <div class="perfil">
-            <img src="\static/img/user.jpg" alt="Perfil">
-            <p>Usuario: {{ session['user'] }}</p>
-        </div>
-        <h1>Nueva Categoría</h1>
+    <header class="navbar">
+        <button id="menu-btn" class="menu-btn">&#9776;</button>
+        <div class="logo">Gestor de Presupuestos</div>
+        <nav class="nav">
+            <ul>
+                <li>
+                    <a href="{{ url_for('ver_articulos') }}">
+                        <button class="btn btn-boletines">Boletines</button>
+                    </a>
+                </li>
+                <li>
+                    <div class="user-dropdown">
+                        <img src="\static/img/user.jpg" alt="Perfil" class="user-avatar">
+                        <span>Usuario: {{ session['user'] }}</span>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+                <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
     </header>
+
+    <aside id="sidebar" class="sidebar">
+        <button id="close-btn" class="close-btn">&times;</button>
+        <ul>
+            <li><a href="{{ url_for('ver_articulos') }}">Ver Artículos</a></li>
+            <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
+            <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+        </ul>
+    </aside>
+
     <main>
-        <form action="{{ url_for('crear_categoria', cuenta_id=cuenta_id) }}" method="post">
-            <label for="nombre_categoria">Asigna un nombre a tu categoria:</label>
-            <input type="text" name="nombre_categoria" required>
-            <button type="submit">Añadir Categoría</button>
-        </form>
-        <a href="{{ url_for('index') }}">Regresar</a>
+        <div class="container-gestion compact">
+            <h2>Crear Nueva Categoría</h2>
+            <form action="{{ url_for('crear_categoria', cuenta_id=cuenta_id) }}" method="post" class="form-style">
+                <div class="form-group">
+                    <label for="nombre_categoria">Asigna un nombre a tu categoría:</label>
+                    <input type="text" name="nombre_categoria" required>
+                </div>
+                <div class="button-group compact-buttons">
+                    <button type="submit" class="btn btn-categorias">Añadir Categoría</button>
+                </div>
+            </form>
+            <div class="button-group compact-buttons">
+                <a href="{{ url_for('index') }}" class="btn btn-banco">Regresar</a>
+            </div>
+        </div>
     </main>
+
+    <script>
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            document.getElementById('sidebar').style.width = '250px';
+        });
+
+        document.getElementById('close-btn').addEventListener('click', function() {
+            document.getElementById('sidebar').style.width = '0';
+        });
+    </script>
+
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
