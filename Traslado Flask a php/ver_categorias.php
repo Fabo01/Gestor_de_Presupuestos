@@ -35,30 +35,86 @@ if (!$nombre_banco) {
 <head>
     <meta charset="UTF-8">
     <title>Categorías del Banco <?php echo htmlspecialchars($nombre_banco); ?></title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <h1>Categorías asociadas al banco: <?php echo htmlspecialchars($nombre_banco); ?></h1>
 
-    <p><a href="añadir_categoria_especifica.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>">Añadir nueva categoría</a></p>
+    <header class="navbar">
+        <button id="menu-btn" class="menu-btn">&#9776;</button>
+            <div class="logo">
+                Gestor de Presupuestos
+            </div>
 
-    <ul>
+            <nav class="nav">
+                <ul>
+                    <li>
+                        <a href="#">
+                            <button class="btn btn-boletines">Boletines</button>
+                        </a>
+                    </li>
 
-<!-------------------------------------------- Codigo php -------------------------------------->
-        <?php
-        $stmt = $db->prepare("SELECT ID_categoria, nombre FROM Categoria WHERE ID_cuentabanco = ?");
-        $stmt->bind_param('i', $ID_cuentabanco);
-        $stmt->execute();
-        $result = $stmt->get_result();
+                    <li>
+                        <div class="user-dropdown">
+                            <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                            <span>Usuario: <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+                        </div>
+                    </li>
 
-        while ($row = $result->fetch_assoc()) {
-            echo "<li><a href='ver_presupuestos.php?id_categoria=" . htmlspecialchars($row['ID_categoria']) . "'>" . htmlspecialchars($row['nombre']) . "</a></li>";
-        }
-        $stmt->close();
-        ?>
-<!---------------------------------------------------------------------------------------------------------------------------->
+                    <li><a href="#">Perfil</a></li>
+                    <li><a href="logout.php">Cerrar Sesión</a></li>
+                </ul>
+            </nav>
+        </header>
 
-    </ul>
+    <aside id="sidebar" class="sidebar">
+        <button id="close-btn" class="close-btn">&times;</button>
 
-    <a href="dashboard.php">Volver al Dashboard</a>
+        <ul>
+            <li><a href="#">Ver Artículos</a></li>
+            <li><a href="#">Estadisticas</a></li>
+            <li><a href="#">Logros</a></li>
+        </ul>
+    </aside>
+
+    <main>
+    
+        <h2>Categorías de: <?php echo htmlspecialchars($nombre_banco); ?></h1>
+        <div class="container-gestion">
+            <h3>Lista de Categorías</h3>
+            <ul class="lista-categorias">
+                <a class="btn btn-banco" href="añadir_categoria_especifica.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>">Añadir nueva categoría</a>
+    <!-------------------------------------------- Codigo php -------------------------------------->
+                <?php
+                $stmt = $db->prepare("SELECT ID_categoria, nombre FROM Categoria WHERE ID_cuentabanco = ?");
+                $stmt->bind_param('i', $ID_cuentabanco);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                while ($row = $result->fetch_assoc()) {
+                    echo "<li>
+                            <strong>" . htmlspecialchars($row['nombre']) . "</strong>
+                            <div class='btn-group horizontal-buttons'>
+                                <a href='ver_presupuestos.php?id_categoria=" . htmlspecialchars($row['ID_categoria']) . "'>
+                                <button class='btn btn-categorias'>Ver Presupuesto</button>
+                                </a>
+                            </div>
+                        </li>";
+                }
+                $stmt->close();
+                ?>
+    <!---------------------------------------------------------------------------------------------------------------------------->
+            </ul>
+
+            <div class="button-group compact-buttons">
+                <a href="dashboard.php" class="btn btn-banco">Regresar</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>
