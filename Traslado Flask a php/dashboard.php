@@ -38,21 +38,45 @@ if (isset($_GET['success'])) {
     <title>Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <header>
-            <div class="perfil">
-                <img src="img/user.jpg" alt="Perfil">
-                <p>Usuario: <?php echo htmlspecialchars($_SESSION['user']); ?></p>
+
+    <header class="navbar">
+        <button id="menu-btn" class="menu-btn">&#9776;</button>
+            <div class="logo">
+                Gestor de Presupuestos
             </div>
-            <h1>Gestor de Presupuestos</h1>
-            <nav class="inicio">
+
+            <nav class="nav">
                 <ul>
-                    <li><a href="#">Ver articulos</a></li>
+                    <li>
+                        <a href="#">
+                            <button class="btn btn-boletines">Boletines</button>
+                        </a>
+                    </li>
+
+                    <li>
+                        <div class="user-dropdown">
+                            <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                            <span>Usuario: <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+                        </div>
+                    </li>
+
                     <li><a href="#">Perfil</a></li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
-        </header>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+        <button id="close-btn" class="close-btn">&times;</button>
+
+        <ul>
+            <li><a href="#">Ver Artículos</a></li>
+            <li><a href="#">Estadisticas</a></li>
+            <li><a href="#">Logros</a></li>
+        </ul>
+    </aside>
 
 <!-------------------------------------------- Codigo php -------------------------------------->
 
@@ -62,32 +86,41 @@ if (isset($_GET['success'])) {
 <!---------------------------------------------------------------------------------------------------------------------------->
 
     <main>
-        <h2>Mis Cuentas</h2>
-        <div class="container-cuentas">
-            <a href="añadir_nuevo_banco.php">Añadir Banco</a>
-            <ul>
+        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['user']); ?></h2>
+        <div class="container-gestion">
 
+            <h3>Mis cuentas</h3>
+            <ul class="lista-cuentas">
+
+                <div class="btn-banco-container">
+                    <a href="añadir_nuevo_banco.php">
+                        <button class="btn btn-banco">Añadir Banco</button>
+                    </a>
+                </div> 
 <!-------------------------------------------- Codigo php -------------------------------------->
-            <?php
-            $stmt = $db->prepare("SELECT ID_cuentabanco, banco FROM Cuentas_de_banco WHERE ID_usuario = ?");
-            $stmt->bind_param('i', $_SESSION['user_id']);
-            $stmt->execute();
-            $result = $stmt->get_result();
+                    <?php
+                    $stmt = $db->prepare("SELECT ID_cuentabanco, banco FROM Cuentas_de_banco WHERE ID_usuario = ?");
+                    $stmt->bind_param('i', $_SESSION['user_id']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
 
-            while ($row = $result->fetch_assoc()) {
-                echo "<li><p>" . htmlspecialchars($row['banco']) . " <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_cuentabanco']) . "'>Ver Categorias</a> </p></li>";
-            }
-            $stmt->close();
-            ?>
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<li>
+                                <strong>" . htmlspecialchars($row['banco']) . "</strong>
+                                <div class='btn-group'>
+                                    <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_cuentabanco']) . "'>
+                                        <button class='btn btn-categorias'>Ver Categorías</button>
+                                    </a>
+                                </div>
+                            </li>";
+                    }
+                    $stmt->close();
+                    ?>
 <!---------------------------------------------------------------------------------------------------------------------------->
-
             </ul>
-        </div>
 
-        <h2>Mis categorías</h2>
-        <div class="container-categorias">
-            <ul>
-
+            <h3>Categorías</h3>
+            <ul class="lista-categorias">
 <!-------------------------------------------- Codigo php -------------------------------------->
                 <?php
                 $stmt = $db->prepare("SELECT Categoria.nombre, Cuentas_de_banco.banco FROM Categoria 
@@ -98,7 +131,19 @@ if (isset($_GET['success'])) {
                 $result = $stmt->get_result();
 
                 while ($row = $result->fetch_assoc()) {
-                    echo "<li>Cuenta: " . htmlspecialchars($row['banco']) . " - Categoría: " . htmlspecialchars($row['nombre']) . "</li>";
+                    echo "<li>Cuenta: " . htmlspecialchars($row['banco']) . " - Categoría: " . htmlspecialchars($row['nombre']) . "
+                            <div class='btn-group'>
+                                <a href=''>
+                                    <button class='btn btn-categorias'>Asignar Presupuesto</button>
+                                </a>
+                                <a href=''>
+                                    <button class='btn btn-categorias'>Agregar Transacción</button>
+                                </a>
+                                <a href=''>
+                                    <button class='btn btn-categorias'>Ver Presupuesto</button>
+                                </a>
+                            </div>
+                         </li>";     
                 }
                 $stmt->close();
                 ?>
@@ -106,8 +151,11 @@ if (isset($_GET['success'])) {
             </ul>
         </div>
     </main>
+
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
+    
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>
