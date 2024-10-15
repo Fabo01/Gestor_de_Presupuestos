@@ -1,6 +1,15 @@
-<!-------------------------------------------- Codigo php -------------------------------------->
 <?php
 require 'Conex.inc';
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -17,9 +26,6 @@ if (isset($_GET['success'])) {
         case 'categoria':
             $mensaje = "Categoría añadida correctamente.";
             break;
-        case 'presupuesto':
-            $mensaje = "Presupuesto añadido correctamente.";
-            break;
         case 'transaccion':
             $mensaje = "Transacción añadida correctamente.";
             break;
@@ -29,14 +35,14 @@ if (isset($_GET['success'])) {
     }
 }
 ?>
-<!---------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 
 <body>
@@ -50,7 +56,7 @@ if (isset($_GET['success'])) {
             <nav class="nav">
                 <ul>
                     <li>
-                        <a href="#">
+                        <a href="articulos.php">
                             <button class="btn btn-boletines">Boletines</button>
                         </a>
                     </li>
@@ -58,11 +64,11 @@ if (isset($_GET['success'])) {
                     <li>
                         <div class="user-dropdown">
                             <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                            <span>Usuario: <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+                            <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                         </div>
                     </li>
 
-                    <li><a href="#">Perfil</a></li>
+                    <li><a href="ver_perfil.php">Perfil</a></li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
@@ -72,21 +78,20 @@ if (isset($_GET['success'])) {
         <button id="close-btn" class="close-btn">&times;</button>
 
         <ul>
-            <li><a href="#">Ver Artículos</a></li>
-            <li><a href="#">Estadisticas</a></li>
-            <li><a href="#">Logros</a></li>
+            <li><a href="articulos.php">Ver Artículos</a></li>
+            <li><a href="estadistica.php">Estadísticas</a></li>
+            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
-<!-------------------------------------------- Codigo php -------------------------------------->
-
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
     <?php if (!empty($mensaje)): ?>
         <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
     <?php endif; ?>
-<!---------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
     <main>
-        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['user']); ?></h2>
+        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['name']); ?></h2>
         <div class="container-gestion">
 
             <h3>Mis cuentas</h3>
@@ -97,49 +102,73 @@ if (isset($_GET['success'])) {
                         <button class="btn btn-banco">Añadir Banco</button>
                     </a>
                 </div> 
-<!-------------------------------------------- Codigo php -------------------------------------->
-                    <?php
-                    $stmt = $db->prepare("SELECT ID_cuentabanco, banco FROM Cuentas_de_banco WHERE ID_usuario = ?");
-                    $stmt->bind_param('i', $_SESSION['user_id']);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
 
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<li>
-                                <strong>" . htmlspecialchars($row['banco']) . "</strong>
-                                <div class='btn-group'>
-                                    <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_cuentabanco']) . "'>
-                                        <button class='btn btn-categorias'>Ver Categorías</button>
-                                    </a>
-                                </div>
-                            </li>";
-                    }
-                    $stmt->close();
-                    ?>
-<!---------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+                <?php
+                $stmt = $db->prepare("SELECT ID_cuentabanco, nombre_banco, tipo_cuenta, nombre_cuenta FROM Cuentas_de_banco WHERE ID_usuario = ?");
+                if (!$stmt) {
+                    error_log("Error al preparar la consulta: " . $db->error);
+                    echo "<p>Ocurrió un error al cargar tus cuentas. Por favor, inténtalo de nuevo más tarde.</p>";
+                    exit();
+                }
+
+                $stmt->bind_param('i', $_SESSION['user_id']);
+                if (!$stmt->execute()) {
+                    error_log("Error al ejecutar la consulta: " . $stmt->error);
+                    echo "<p>Ocurrió un error al cargar tus cuentas. Por favor, inténtalo de nuevo más tarde.</p>";
+                    exit();
+                }
+
+                $result = $stmt->get_result();
+
+                while ($row = $result->fetch_assoc()) {
+                    echo "<li>
+                            <strong>" . htmlspecialchars($row['nombre_cuenta']) . " - " . htmlspecialchars($row['nombre_banco']) . " (" . htmlspecialchars($row['tipo_cuenta']) . ")</strong>
+                            <div class='btn-group'>
+                                <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_cuentabanco'], ENT_QUOTES, 'UTF-8') . "'>
+                                    <button class='btn btn-categorias'>Ver Categorías</button>
+                                </a>
+                            </div>
+                        </li>";
+                }
+                $stmt->close();
+                ?>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
             </ul>
 
             <h3>Categorías</h3>
             <ul class="lista-categorias">
-<!-------------------------------------------- Codigo php -------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
                 <?php
-                $stmt = $db->prepare("SELECT Categoria.nombre, Cuentas_de_banco.banco FROM Categoria 
+                $stmt = $db->prepare("SELECT Categoria.ID_categoria, Categoria.nombre, Cuentas_de_banco.nombre_banco FROM Categoria 
                                     INNER JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco 
                                     WHERE Cuentas_de_banco.ID_usuario = ? ");
+                if (!$stmt) {
+                    error_log("Error al preparar la consulta: " . $db->error);
+                    echo "<p>Ocurrió un error al cargar tus categorías. Por favor, inténtalo de nuevo más tarde.</p>";
+                    exit();
+                }
+
                 $stmt->bind_param('i', $_SESSION['user_id']);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    error_log("Error al ejecutar la consulta: " . $stmt->error);
+                    echo "<p>Ocurrió un error al cargar tus categorías. Por favor, inténtalo de nuevo más tarde.</p>";
+                    exit();
+                }
+
                 $result = $stmt->get_result();
 
                 while ($row = $result->fetch_assoc()) {
-                    echo "<li>Cuenta: " . htmlspecialchars($row['banco']) . " - Categoría: " . htmlspecialchars($row['nombre']) . "
+                    echo "<li>Cuenta: " . htmlspecialchars($row['nombre_banco']) . " - Categoría: " . htmlspecialchars($row['nombre']) . "
                             <div class='btn-group'>
-                                <a href=''>
+                                <a href='asignar_presupuesto.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
                                     <button class='btn btn-categorias'>Asignar Presupuesto</button>
                                 </a>
-                                <a href=''>
+                                <a href='agregar_transaccion.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
                                     <button class='btn btn-categorias'>Agregar Transacción</button>
                                 </a>
-                                <a href=''>
+                                <a href='ver_presupuesto.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
                                     <button class='btn btn-categorias'>Ver Presupuesto</button>
                                 </a>
                             </div>
@@ -147,7 +176,7 @@ if (isset($_GET['success'])) {
                 }
                 $stmt->close();
                 ?>
-<!---------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
             </ul>
         </div>
     </main>
@@ -156,6 +185,6 @@ if (isset($_GET['success'])) {
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
     
-    <script src="js/menu_lateral.js"></script>
+    <script src="JS/menu_lateral.js"></script>
 </body>
 </html>

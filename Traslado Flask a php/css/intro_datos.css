@@ -106,49 +106,32 @@ body, html {
 /* Main Content */
 main {
     padding: 20px;
-    max-width: 900px;
+    max-width: 600px; /* Reduce el ancho general para hacer el diseño más compacto */
     margin: 40px auto;
 }
 
-.container-gestion {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
+/* Compactar el contenedor */
+.container-gestion.compact {
+    max-width: 600px; /* Reduce el ancho del contenedor */
+    padding: 15px; /* Reduce el padding */
+    margin-top: 10px; /* Reduce el espacio superior */
 }
 
-.container-gestion h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-/* Lists Styles */
-.lista-categorias {
-    list-style-type: none;
-    padding: 0;
-}
-
-.lista-categorias li {
-    margin-bottom: 20px;
-}
-
-/* Button Group - Alinear botones en fila con margen */
-.btn-group.horizontal-buttons {
+/* Espaciado compacto entre los botones */
+.button-group.compact-buttons {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    justify-content: flex-start;
+    gap: 10px; /* Espaciado reducido entre botones */
+    margin: 10px 0; /* Reduce los márgenes superior e inferior */
 }
 
-/* Margen adicional alrededor de los botones */
+/* Button Styles */
 .btn {
-    padding: 10px 15px;
+    padding: 8px 12px; /* Hacemos los botones un poco más pequeños */
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin: 10px 0;
+    font-size: 14px;   /* Reduce el tamaño de la fuente */
 }
 
 .btn-categorias {
@@ -156,22 +139,27 @@ main {
     color: #fff;
 }
 
-.btn-categorias:hover {
-    background-color: #006bb3; /* Tono más oscuro al hacer hover */
-}
-
 .btn-banco-container {
     margin-bottom: 20px;
-    margin-left: auto;
 }
 
 .btn-banco {
     background-color: #FF8C00; /* Naranja */
     color: #fff;
+    margin-left: 0; /* Elimina margen izquierdo para compactar */
 }
 
-.btn-banco:hover {
-    background-color: #e69500; /* Tono más oscuro al hacer hover */
+/* Ajustes en los formularios */
+.form-group {
+    margin-bottom: 10px; /* Reduce el espacio entre los campos del formulario */
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px; /* Reduce el padding de los campos de entrada */
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-radius: 4px;
 }
 
 /* Footer */
