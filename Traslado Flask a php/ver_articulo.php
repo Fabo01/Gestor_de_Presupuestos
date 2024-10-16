@@ -103,8 +103,8 @@ $csrf_token = $_SESSION['csrf_token'];
     <nav class="nav">
         <ul>
             <li>
-                <a href="boletines.php">
-                    <button class="btn btn-boletines">Boletines</button>
+                <a href="informacion.php">
+                    <button class="btn btn-boletines">Ayuda</button>
                 </a>
             </li>
             <li>

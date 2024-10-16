@@ -70,62 +70,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-    <header class="navbar">
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">Gestor de Presupuestos</div>
-        <nav class="nav">
-            <ul>
-                <li><a href="#"><button class="btn btn-boletines">Boletines</button></a></li>
-                <li>
-                    <div class="user-dropdown">
-                        <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                    </div>
-                </li>
-                <li><a href="#">Perfil</a></li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <aside id="sidebar" class="sidebar">
-        <button id="close-btn" class="close-btn">&times;</button>
+<header class="navbar">
+    <button id="menu-btn" class="menu-btn">&#9776;</button>
+    <div class="logo">Gestor de Presupuestos</div>
+    <nav class="nav">
         <ul>
-            <li><a href="#">Ver Artículos</a></li>
-            <li><a href="#">Estadísticas</a></li>
-            <li><a href="#">Logros</a></li>
+            <li><a href="informacion.php"><button class="btn btn-boletines">Ayuda</button></a></li>
+            <li>
+                <div class="user-dropdown">
+                    <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                    <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                </div>
+            </li>
+            <li><a href="ver_perfil.php">Perfil</a></li>
+            <li><a href="logout.php">Cerrar Sesión</a></li>
         </ul>
-    </aside>
+    </nav>
+</header>
 
-    <main>
-        <div class="container-gestion compact">
-            <h2><?php echo htmlspecialchars($nombre_banco); ?> - Crear Nueva Categoría</h2>
+<aside id="sidebar" class="sidebar">
+    <button id="close-btn" class="close-btn">&times;</button>
+    <ul>
+        <li><a href="dashboard.php">Inicio</a></li>
+        <li><a href="articulos.php">Ver Articulos</a></li>
+        <li><a href="estadistica.php">Estadísticas</a></li>
+        <li><a href="logros.php">Logros</a></li>
+    </ul>
+</aside>
 
-            <form action="añadir_categoria.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>" method="POST" class="form-style">
-                <div class="form-group">
-                    <label for="categoria">Nombre de la categoría:</label>
-                    <input type="text" name="categoria" id="categoria" placeholder="Nombre de la categoría" required><br><br>
-                </div>
+<main>
+    <div class="container-gestion compact">
+        <h2><?php echo htmlspecialchars($nombre_banco); ?> - Crear Nueva Categoría</h2>
 
-                <div class="form-group">
-                    <label for="presupuesto">Presupuesto de la categoría:</label>
-                    <input type="number" name="presupuesto" id="presupuesto" placeholder="Presupuesto de la categoría" required><br><br>
-                </div>
+        <form action="añadir_categoria.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>" method="POST" class="form-style">
+            <div class="form-group">
+                <label for="categoria">Nombre de la categoría:</label>
+                <input type="text" name="categoria" id="categoria" placeholder="Nombre de la categoría" required><br><br>
+            </div>
 
-                <div class="button-group compact-buttons">
-                    <button type="submit" class="btn btn-categorias">Añadir categoría</button>
-                </div>
-            </form>
+            <div class="form-group">
+                <label for="presupuesto">Presupuesto de la categoría:</label>
+                <input type="number" name="presupuesto" id="presupuesto" placeholder="Presupuesto de la categoría" required><br><br>
+            </div>
 
             <div class="button-group compact-buttons">
-                <a href="ver_categorias.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>" class="btn btn-banco">Regresar</a>
+                <button type="submit" class="btn btn-categorias">Añadir categoría</button>
             </div>
-        </div>
-    </main>
+        </form>
 
-    <footer>
-        <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
-    </footer>
+        <div class="button-group compact-buttons">
+            <a href="ver_categorias.php?id_banco=<?php echo htmlspecialchars($ID_cuentabanco); ?>" class="btn btn-banco">Regresar</a>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
+</footer>
 
 <script src="JS/menu_lateral.js"></script>
 </body>

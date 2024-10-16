@@ -56,8 +56,8 @@ if (isset($_GET['success'])) {
             <nav class="nav">
                 <ul>
                     <li>
-                        <a href="articulos.php">
-                            <button class="btn btn-boletines">Boletines</button>
+                        <a href="informacion.php">
+                            <button class="btn btn-boletines">Ayuda</button>
                         </a>
                     </li>
 
@@ -137,11 +137,11 @@ if (isset($_GET['success'])) {
 
             </ul>
 
-            <h3>Categorías</h3>
+            <h3>Mis Categorías</h3>
             <ul class="lista-categorias">
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
                 <?php
-                $stmt = $db->prepare("SELECT Categoria.ID_categoria, Categoria.nombre, Cuentas_de_banco.nombre_banco FROM Categoria 
+                $stmt = $db->prepare("SELECT Categoria.ID_categoria, Categoria.nombre, Cuentas_de_banco.nombre_banco, Cuentas_de_banco.nombre_cuenta, Cuentas_de_banco.tipo_cuenta FROM Categoria 
                                     INNER JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco 
                                     WHERE Cuentas_de_banco.ID_usuario = ? ");
                 if (!$stmt) {
@@ -160,16 +160,10 @@ if (isset($_GET['success'])) {
                 $result = $stmt->get_result();
 
                 while ($row = $result->fetch_assoc()) {
-                    echo "<li>Cuenta: " . htmlspecialchars($row['nombre_banco']) . " - Categoría: " . htmlspecialchars($row['nombre']) . "
+                    echo "<li>" . htmlspecialchars($row['nombre_cuenta']) . ": " . htmlspecialchars($row['nombre_banco']) . "(" . htmlspecialchars($row['tipo_cuenta']) . ") - Categoría: " . htmlspecialchars($row['nombre']) . "
                             <div class='btn-group'>
-                                <a href='asignar_presupuesto.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn btn-categorias'>Asignar Presupuesto</button>
-                                </a>
-                                <a href='agregar_transaccion.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn btn-categorias'>Agregar Transacción</button>
-                                </a>
-                                <a href='ver_presupuesto.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn btn-categorias'>Ver Presupuesto</button>
+                                <a href='gestionar_transaccion.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
+                                    <button class='btn btn-categorias'>Gestionar</button>
                                 </a>
                             </div>
                          </li>";     

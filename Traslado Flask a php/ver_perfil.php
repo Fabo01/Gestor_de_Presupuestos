@@ -74,8 +74,8 @@ if (isset($error_message)) {
     <nav class="nav">
         <ul>
             <li>
-                <a href="articulos.php">
-                    <button class="btn btn-boletines">Boletines</button>
+                <a href="informacion.php">
+                    <button class="btn btn-boletines">Ayuda</button>
                 </a>
             </li>
             <li>

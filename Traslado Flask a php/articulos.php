@@ -78,6 +78,7 @@ if (!$stmt_total) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro</title>
     <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/articulos.css">
 </head>
 <body>
     <header class="navbar">
@@ -88,8 +89,8 @@ if (!$stmt_total) {
         <nav class="nav">
             <ul>
                 <li>
-                    <a href="boletines.php">
-                        <button class="btn btn-boletines">Boletines</button>
+                    <a href="informacion.php">
+                            <button class="btn btn-boletines">Ayuda</button>
                     </a>
                 </li>
                 <li>
@@ -108,7 +109,6 @@ if (!$stmt_total) {
         <button id="close-btn" class="close-btn">&times;</button>
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
-            <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadistica.php">Estadísticas</a></li>
             <li><a href="logros.php">Logros</a></li>
         </ul>
