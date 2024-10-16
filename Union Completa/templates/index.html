@@ -19,12 +19,14 @@
                 </li>
                 <li>
                     <div class="user-dropdown">
-                        <img src="\static/img/user.jpg" alt="Perfil" class="user-avatar">
+                        <img src="/static/img/user.jpg" alt="Perfil" class="user-avatar" id="profile-btn">
                         <span>Usuario: {{ session['user'] }}</span>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="{{ url_for('perfil') }}" class="profile-link">Perfil de Usuario</a>
+                            <a href="{{ url_for('logout') }}" class="logout-link">Cerrar Sesión</a>
+                        </div>
                     </div>
                 </li>
-                <li><a href="{{ url_for('perfil') }}">Perfil</a></li>
-                <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
             </ul>
         </nav>
     </header>
@@ -39,13 +41,10 @@
     </aside>
     
     <main>
-        <!-- Cambié el encabezado a "Bienvenido, [nombre de usuario]" -->
         <h2>Bienvenido, {{ session['user'] }}</h2>
         <div class="container-gestion">
-            <!-- Título "Mis cuentas" -->
             <h3>Mis cuentas</h3>
             <ul class="lista-cuentas">
-                <!-- Botón "Añadir Banco" -->
                 <div class="btn-banco-container">
                     <a href="{{ url_for('vincular_banco') }}">
                         <button class="btn btn-banco">Añadir Banco</button>
@@ -54,7 +53,7 @@
                 {% for cuenta in cuentas %}
                 <li>
                     <strong>{{ cuenta[2] }}</strong>
-                    <div class="btn-group">
+                    <div class="btn-group horizontal-buttons">
                         <a href="{{ url_for('crear_categoria', cuenta_id=cuenta[0]) }}">
                             <button class="btn btn-categorias">Añadir Categoría</button>
                         </a>
@@ -62,17 +61,16 @@
                             <button class="btn btn-categorias">Ver Categorías</button>
                         </a>
                     </div>
-                    </li>
+                </li>
                 {% endfor %}
             </ul>
-            
-            <!-- Título "Categorías" -->
+
             <h3>Categorías</h3>
             <ul class="lista-categorias">
                 {% for categoria in categorias %}
                     <li>
                         {{ categoria[2] }} - {{ categoria[1] }}
-                        <div class="btn-group">
+                        <div class="btn-group horizontal-buttons">
                             <a href="{{ url_for('crear_presupuesto', categoria_id=categoria[0]) }}">
                                 <button class="btn btn-categorias">Asignar Presupuesto</button>
                             </a>
@@ -89,6 +87,7 @@
         </div>
     </main>
 
+    <script src="/static/js/profile_menu.js"></script>
     <script>
         // Control del menú lateral
         document.getElementById('menu-btn').addEventListener('click', function() {
