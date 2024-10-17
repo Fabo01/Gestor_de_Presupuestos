@@ -79,4 +79,4 @@ Gestor de Presupuestos es una aplicación diseñada para ayudar a los jóvenes a
 
 **Diagrama de Interfaces:** https://www.figma.com/design/yRNXwqqGroWKTN1r0G3Clf/Untitled?node-id=0-1&t=3A49f1qMaVcWcjQT-1
 
-**Link al Sitio Web:** https://pillan.inf.uct.cl/~marcelo.vidal/Gestor_de_Presupuestos/Traslado%20Flask%20a%20php/
+**Link al Sitio Web:** https://pillan.inf.uct.cl/~evejar/TallerDeIntegracion/
