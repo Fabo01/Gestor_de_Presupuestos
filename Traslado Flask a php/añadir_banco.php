@@ -3,9 +3,9 @@ require 'Conex.inc';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
-    $banco = trim($_POST['banco']);
-    $tipo = trim($_POST['tipo']);
-    $cuenta = trim($_POST['cuenta']);
+    $banco = trim($_POST['banco-name']);
+    $tipo = trim($_POST['tipo-cnta']);
+    $cuenta = trim($_POST['cuenta-name']);
     $ID_usuario = $_SESSION['user_id'];
 
     if (empty($banco)) {

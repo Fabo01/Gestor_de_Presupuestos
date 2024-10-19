@@ -68,14 +68,32 @@ if (isset($_GET['success'])) {
         <form action="añadir_banco.php" method="POST">
             <label for="banco">Banco: </label>
             <input type="text" name="banco" placeholder="Nombre del banco" required>
+            <select id="banco" name="banco" required>
+                <option value="0">Selecciona tu banco.</option>
+                <option value="Banco de Chile">Banco de Chile</option>
+                <option value="BCI">BCI</option>
+                <option value="Banco Estado">Banco Estado</option>
+                <option value="Santander">Santander</option>
+                <option value="Itau">Itaú</option>
+                <option value="Scotiabank">Scotiabank</option>
+                <option value="Falabella">Banco Falabella</option>
+                <option value="Ripley">Banco Ripley</option>
+                <option value="Security">Banco Security</option>
+                <option value="Otro">otro</option>
+            </select>
 
             <label for="tipo">Tipo de Cuenta: </label>
-            <input type="text" name="tipo" placeholder="Tipo de banco" required>
-
+            <select name="tipo-cnta" id="tipo-cnta">
+                <option value="Cuenta Rut">Cuenta Rut</option>
+                <option value="Cuenta Vista">Cuenta Vista</option>
+                <option value="Cuenta de Ahorro">Cuenta de Ahorro</option>
+                <option value="Cuenta Corriente">Cuenta Corriente</option>
+            </select>
             <label for="cuenta">Nombre: </label>
             <input type="text" name="cuenta" placeholder="Nombre de la Cuenta" required>
 
             <button type="submit" name="submit_banco">Añadir banco</button>
+
         </form>
     </main>
 
