@@ -1,5 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'Conex.inc';
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -23,7 +26,7 @@ if (isset($_GET['success'])) {
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="navbar">
@@ -35,7 +38,7 @@ if (isset($_GET['success'])) {
             <ul>
                 <li>
                     <a href="informacion.php">
-                            <button class="btn btn-boletines">Ayuda</button>
+                            <button class="btn-boletines">Ayuda</button>
                     </a>
                 </li>
                 <li>
@@ -67,7 +70,6 @@ if (isset($_GET['success'])) {
         <h2>Añadir un nuevo banco</h2>
         <form action="añadir_banco.php" method="POST">
             <label for="banco">Banco: </label>
-            <input type="text" name="banco" placeholder="Nombre del banco" required>
             <select id="banco" name="banco" required>
                 <option value="0">Selecciona tu banco.</option>
                 <option value="Banco de Chile">Banco de Chile</option>
@@ -83,14 +85,14 @@ if (isset($_GET['success'])) {
             </select>
 
             <label for="tipo">Tipo de Cuenta: </label>
-            <select name="tipo-cnta" id="tipo-cnta">
+            <select name="tipo" id="tipo" require>
                 <option value="Cuenta Rut">Cuenta Rut</option>
                 <option value="Cuenta Vista">Cuenta Vista</option>
                 <option value="Cuenta de Ahorro">Cuenta de Ahorro</option>
                 <option value="Cuenta Corriente">Cuenta Corriente</option>
             </select>
             <label for="cuenta">Nombre: </label>
-            <input type="text" name="cuenta" placeholder="Nombre de la Cuenta" required>
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre de la Cuenta" required>
 
             <button type="submit" name="submit_banco">Añadir banco</button>
 

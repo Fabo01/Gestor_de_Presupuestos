@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'Conex.inc';
 session_start();
 
@@ -56,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (empty($error)) {
-                $stmt = $db->prepare("SELECT ID_usuario, username, nombre, password FROM Usuario WHERE email = ?");
+                $stmt = $db->prepare("SELECT ID_usuario, usuario, nombre, password FROM Usuarios WHERE email = ?");
                 $stmt->bind_param('s', $email);
                 $stmt->execute();
                 $stmt->store_result();

@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require 'Conex.inc';
 // Iniciamos la sesión si es necesario
 session_start();
 ?>
@@ -7,7 +10,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>Información y Ayuda</title>
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href=css/style.css>
 </head>
 <body>
 
@@ -101,7 +104,7 @@ session_start();
     <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
 </footer>
 
-<script src="JS/menu_lateral.js"></script>
-<script src="JS/informacion.js"></script>
+<script src="js/menu_lateral.js"></script>
+<!-- <script src="js/informacion.js"></script> -->
 </body>
 </html>

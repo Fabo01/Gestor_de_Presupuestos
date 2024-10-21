@@ -1,4 +1,7 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'Conex.inc';
 session_start();
 
@@ -45,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($password) < 8) {
             $error = "La contraseña debe tener al menos 8 caracteres.";
         } else {
-            $stmt = $db->prepare("SELECT COUNT(*) FROM Usuario WHERE email = ? OR username = ?");
+            $stmt = $db->prepare("SELECT COUNT(*) FROM Usuarios WHERE email = ? OR usuario = ?");
             $stmt->bind_param('ss', $email, $username);
             $stmt->execute();
             $stmt->bind_result($count);
@@ -58,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $options = ['cost' => 12];
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options);
 
-                $stmt = $db->prepare("INSERT INTO Usuario (username, email, password, nombre, apellido, nacionalidad, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt = $db->prepare("INSERT INTO Usuarios (usuario, email, password, nombre, apellido, nacionalidad, nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param('sssssss', $username, $email, $hashed_password, $name, $lastname, $nacionalidad, $fechanac);
 
                 if ($stmt->execute()) {

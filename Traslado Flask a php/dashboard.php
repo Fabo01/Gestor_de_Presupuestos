@@ -1,5 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'Conex.inc';
+
 
 session_set_cookie_params([
     'lifetime' => 0,
@@ -42,7 +45,7 @@ if (isset($_GET['success'])) {
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -99,13 +102,13 @@ if (isset($_GET['success'])) {
 
                 <div class="btn-banco-container">
                     <a href="añadir_nuevo_banco.php">
-                        <button class="btn btn-banco">Añadir Banco</button>
+                        <button class="btn-banco">Añadir Banco</button>
                     </a>
                 </div> 
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
                 <?php
-                $stmt = $db->prepare("SELECT ID_cuentabanco, nombre_banco, tipo_cuenta, nombre_cuenta FROM Cuentas_de_banco WHERE ID_usuario = ?");
+                $stmt = $db->prepare("SELECT ID_banco, banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_usuario = ?");
                 if (!$stmt) {
                     error_log("Error al preparar la consulta: " . $db->error);
                     echo "<p>Ocurrió un error al cargar tus cuentas. Por favor, inténtalo de nuevo más tarde.</p>";
@@ -123,15 +126,15 @@ if (isset($_GET['success'])) {
 
                 while ($row = $result->fetch_assoc()) {
                     echo "<li>
-                            <strong>" . htmlspecialchars($row['nombre_cuenta']) . " - " . htmlspecialchars($row['nombre_banco']) . " (" . htmlspecialchars($row['tipo_cuenta']) . ")</strong>
+                            <strong>" . htmlspecialchars($row['banco'] ?? '', ENT_QUOTES, 'UTF-8') . " - " . htmlspecialchars($row['tipo'] ?? '', ENT_QUOTES, 'UTF-8') . " (" . htmlspecialchars($row['nombre'] ?? '', ENT_QUOTES, 'UTF-8') . ")</strong>
                             <div class='btn-group'>
-                                <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_cuentabanco'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn btn-categorias'>Ver Categorías</button>
+                                <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_banco'] ?? '', ENT_QUOTES, 'UTF-8') . "'>
+                                    <button class='btn-categorias'>Ver Categorías</button>
                                 </a>
                             </div>
                         </li>";
                 }
-                $stmt->close();
+                $stmt->close();                
                 ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
@@ -141,8 +144,9 @@ if (isset($_GET['success'])) {
             <ul class="lista-categorias">
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
                 <?php
-                $stmt = $db->prepare("SELECT Categoria.ID_categoria, Categoria.nombre, Cuentas_de_banco.nombre_banco, Cuentas_de_banco.nombre_cuenta, Cuentas_de_banco.tipo_cuenta FROM Categoria 
-                                    INNER JOIN Cuentas_de_banco ON Categoria.ID_cuentabanco = Cuentas_de_banco.ID_cuentabanco 
+                $stmt = $db->prepare("SELECT Categorias.ID_categoria, Categorias.nombre AS categoria_nombre, Cuentas_de_banco.banco, Cuentas_de_banco.tipo, Cuentas_de_banco.nombre AS cuenta_nombre 
+                                    FROM Categorias
+                                    INNER JOIN Cuentas_de_banco ON Categorias.ID_usuario = Cuentas_de_banco.ID_usuario
                                     WHERE Cuentas_de_banco.ID_usuario = ? ");
                 if (!$stmt) {
                     error_log("Error al preparar la consulta: " . $db->error);
@@ -163,10 +167,10 @@ if (isset($_GET['success'])) {
                     echo "<li>" . htmlspecialchars($row['nombre_cuenta']) . ": " . htmlspecialchars($row['nombre_banco']) . "(" . htmlspecialchars($row['tipo_cuenta']) . ") - Categoría: " . htmlspecialchars($row['nombre']) . "
                             <div class='btn-group'>
                                 <a href='gestionar_transaccion.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn btn-categorias'>Gestionar</button>
+                                    <button class='btn-categorias'>Gestionar</button>
                                 </a>
                             </div>
-                         </li>";     
+                        </li>";     
                 }
                 $stmt->close();
                 ?>
@@ -179,6 +183,6 @@ if (isset($_GET['success'])) {
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
     
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>

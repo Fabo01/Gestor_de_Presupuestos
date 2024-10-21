@@ -1,11 +1,14 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'Conex.inc';
+
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
-    $banco = trim($_POST['banco-name']);
-    $tipo = trim($_POST['tipo-cnta']);
-    $cuenta = trim($_POST['cuenta-name']);
+    $banco = trim($_POST['banco']);
+    $tipo = trim($_POST['tipo']);
+    $nombre_cnta = trim($_POST['nombre']);
     $ID_usuario = $_SESSION['user_id'];
 
     if (empty($banco)) {
@@ -13,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
         exit();
     }
 
-    $stmt = $db->prepare("SELECT COUNT(*) FROM Cuentas_de_banco WHERE ID_usuario = ? AND nombre_banco = ? AND tipo_cuenta = ? AND nombre_cuenta = ? ");
+    $stmt = $db->prepare("SELECT COUNT(*) FROM Cuentas_de_banco WHERE ID_usuario = ? AND banco = ? AND tipo = ? AND nombre = ? ");
     $stmt->bind_param('isss', $ID_usuario, $banco, $tipo, $cuenta);
     $stmt->execute();
     $stmt->bind_result($count);
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_banco'])) {
         header('Location: dashboard.php?error=banco_existente');
         exit();
     } else {
-        $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (ID_usuario, nombre_banco, tipo_cuenta, nombre_cuenta) VALUES (?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (ID_usuario, banco, tipo, nombre) VALUES (?, ?, ?, ?)");
         $stmt->bind_param('isss', $ID_usuario, $banco, $tipo, $cuenta);
 
         if ($stmt->execute()) {
