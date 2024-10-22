@@ -71,7 +71,11 @@ if (isset($_GET['success'])) {
                         </div>
                     </li>
 
-                    <li><a href="ver_perfil.php">Perfil</a></li>
+                    <li>
+                        <a href="ver_perfil.php">
+                            <button class="btn btn-perfil">Perfil</button>
+                        </a>
+                    </li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>
@@ -131,6 +135,13 @@ if (isset($_GET['success'])) {
                                 <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_banco'] ?? '', ENT_QUOTES, 'UTF-8') . "'>
                                     <button class='btn-categorias'>Ver Categorías</button>
                                 </a>
+                                
+                                <!-- Formulario para eliminar banco -->
+                                <form action='gestionar_bancos.php' method='POST' style='display:inline;'>
+                                    <input type='hidden' name='action' value='borrar_banco'>
+                                    <input type='hidden' name='ID_banco' value='" . htmlspecialchars($row['ID_banco'] ?? '', ENT_QUOTES, 'UTF-8') . "'>
+                                    <button type='submit' class='btn-delete' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este banco?\");'>Eliminar Banco</button>
+                                </form>
                             </div>
                         </li>";
                 }

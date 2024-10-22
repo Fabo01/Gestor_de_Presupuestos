@@ -47,7 +47,11 @@ if (isset($_GET['success'])) {
                         <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     </div>
                 </li>
-                <li><a href="ver_perfil.php">Perfil</a></li>
+                <li>
+                    <a href="ver_perfil.php">
+                        <button class="btn btn-perfil">Perfil</button>
+                    </a>
+                </li>
                 <li><a href="logout.php">Cerrar Sesión</a></li>
             </ul>
         </nav>
@@ -68,7 +72,9 @@ if (isset($_GET['success'])) {
 
     <main>
         <h2>Añadir un nuevo banco</h2>
-        <form action="añadir_banco.php" method="POST">
+        <form action="gestionar_bancos.php" method="POST">
+            <!-- oculto para especificar que se debe agregar banco -->
+            <input type="hidden" name="action" value="add_banco">
             <label for="banco">Banco: </label>
             <select id="banco" name="banco" required>
                 <option value="0">Selecciona tu banco.</option>
@@ -91,10 +97,10 @@ if (isset($_GET['success'])) {
                 <option value="Cuenta de Ahorro">Cuenta de Ahorro</option>
                 <option value="Cuenta Corriente">Cuenta Corriente</option>
             </select>
-            <label for="cuenta">Nombre: </label>
+            <label for="nombre">Nombre: </label>
             <input type="text" name="nombre" id="nombre" placeholder="Nombre de la Cuenta" required>
 
-            <button type="submit" name="submit_banco">Añadir banco</button>
+            <button type="submit" name="add_banco">Añadir banco</button>
 
         </form>
     </main>
