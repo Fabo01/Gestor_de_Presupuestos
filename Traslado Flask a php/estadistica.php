@@ -26,7 +26,7 @@ if (!$user_id) {
 
 $stmt = $db->prepare("
     SELECT SUM(presupuesto_mensual) AS presupuesto_total
-    FROM Categoria C
+    FROM Categorias C
     INNER JOIN Cuentas_de_banco CB ON C.ID_cuentabanco = CB.ID_cuentabanco
     WHERE CB.ID_usuario = ?
 ");
@@ -47,7 +47,7 @@ if (!$stmt) {
 
 $stmt = $db->prepare("
     SELECT SUM(C.gasto_acumulado) AS gasto_total, SUM(C.saldo_restante) AS saldo_total
-    FROM Categoria C
+    FROM Categorias C
     INNER JOIN Cuentas_de_banco CB ON C.ID_cuentabanco = CB.ID_cuentabanco
     WHERE CB.ID_usuario = ?
 ");
@@ -66,7 +66,7 @@ if (!$stmt) {
 
 $stmt = $db->prepare("
     SELECT C.nombre, C.gasto_acumulado
-    FROM Categoria C
+    FROM Categorias C
     INNER JOIN Cuentas_de_banco CB ON C.ID_cuentabanco = CB.ID_cuentabanco
     WHERE CB.ID_usuario = ?
 ");
@@ -117,7 +117,7 @@ if (!$stmt) {
 <head>
     <meta charset="UTF-8">
     <title>Estadísticas Financieras</title>
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -255,6 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-<script src="JS/menu_lateral.js"></script>
+<script src="js/menu_lateral.js"></script>
 </body>
 </html>

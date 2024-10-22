@@ -17,14 +17,14 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
+$user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);//filter van para ver si el id es entero
 if (!$user_id) {
-    session_destroy();
+    session_destroy();//si es incorrecta se destruye la sesion
     header('Location: index.php');
     exit();
 }
 
-$stmt = $db->prepare("SELECT username, nombre, apellido, email, nacionalidad, foto_perfil FROM Usuario WHERE ID_usuario = ?");
+$stmt = $db->prepare("SELECT usuario, nombre, apellido, email, nacionalidad, nacimiento, foto FROM Usuarios WHERE ID_usuario = ?");
 if (!$stmt) {
     error_log("Error al preparar la consulta: " . $db->error);
     $error_message = "Ocurrió un error al cargar tu perfil. Por favor, inténtalo de nuevo más tarde.";
@@ -36,11 +36,12 @@ if (!$stmt) {
     } else {
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
-            $username = htmlspecialchars($row['username']);
+            $username = htmlspecialchars($row['usuario']);
             $email = htmlspecialchars($row['email']);
             $nombre = htmlspecialchars($row['nombre']);
             $apellido = htmlspecialchars($row['apellido']);
             $nacionalidad = htmlspecialchars($row['nacionalidad']);
+            $nacimiento = htmlspecialchars($row['nacimiento']);
             $foto_perfil = htmlspecialchars($row['foto_perfil']);
         } else {
             $error_message = "Usuario no encontrado.";
@@ -62,7 +63,8 @@ if (isset($error_message)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/perfil.css">
 </head>
 <body>
 
@@ -99,7 +101,7 @@ if (isset($error_message)) {
     </ul>
 </aside>
 
-<div class="container">
+<main class="container">
     <div class="profile-content">
         <div class="profile-header">
             <img src="<?php echo isset($foto_perfil) && !empty($foto_perfil) ? 'uploads/' . $foto_perfil : 'img/user.jpg'; ?>" alt="Perfil" class="profile-picture">
@@ -128,9 +130,12 @@ if (isset($error_message)) {
         <button onclick="loadContent('configuracionAhorros')">Configuración de ahorros</button>
         <button onclick="loadContent('grafico')">Gráfico</button>
     </div>
-</div>
+</main>
+<footer>
+    <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
+</footer>
 
-<script src="JS/perfil.js"></script>
-<script src="JS/menu_lateral.js"></script>
+<script src="js/perfil.js"></script>
+<script src="js/menu_lateral.js"></script>
 </body>
 </html>

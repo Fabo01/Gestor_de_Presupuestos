@@ -1,7 +1,18 @@
 <?php
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require 'Conex.inc';
+
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
+
 session_start();
 
 if (isset($_SESSION['user_id'])) {
@@ -16,15 +27,6 @@ $token = $_SESSION['token'];
 
 $error = '';
 $email = '';
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '',
-    'secure' => isset($_SERVER['HTTPS']),
-    'httponly' => true,
-    'samesite' => 'Strict',
-]);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {

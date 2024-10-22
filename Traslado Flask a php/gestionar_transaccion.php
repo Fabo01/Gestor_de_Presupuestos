@@ -115,7 +115,11 @@ $csrf_token = $_SESSION['csrf_token'];
                         </div>
                     </li>
 
-                    <li><a href="ver_perfil.php">Perfil</a></li>
+                    <li>
+                        <a href="ver_perfil.php">
+                            <button class="btn btn-perfil">Perfil</button>
+                        </a>
+                    </li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </nav>

@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
             // Verificar que la categoría pertenece al usuario
             $stmt = $db->prepare("
                 SELECT C.ID_categoria, C.presupuesto_mensual, C.gasto_acumulado
-                FROM Categoria C
+                FROM Categorias C
                 INNER JOIN Cuentas_de_banco CB ON C.ID_cuentabanco = CB.ID_cuentabanco
                 WHERE C.ID_categoria = ? AND CB.ID_usuario = ?
             ");
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion']) && $_POST['
 }
 
 // Obtener el nombre del banco
-$stmt = $db->prepare("SELECT nombre_banco FROM Cuentas_de_banco WHERE ID_cuentabanco = ? AND ID_usuario = ?");
+$stmt = $db->prepare("SELECT nombre, banco, tipo FROM Cuentas_de_banco WHERE ID_banco = ? AND ID_usuario = ?");
 if (!$stmt) {
     error_log("Error al preparar la consulta: " . $db->error);
     echo "Ocurrió un error al cargar los datos. Por favor, inténtalo de nuevo más tarde.";
@@ -157,7 +157,11 @@ $stmt->close();
                     <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
             </li>
-            <li><a href="ver_perfil.php">Perfil</a></li>
+            <li>
+                <a href="ver_perfil.php">
+                    <button class="btn btn-perfil">Perfil</button>
+                </a>
+            </li>
             <li><a href="logout.php">Cerrar Sesión</a></li>
         </ul>
     </nav>

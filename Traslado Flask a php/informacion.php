@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 require 'Conex.inc';
 // Iniciamos la sesión si es necesario
 session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -34,7 +35,11 @@ session_start();
                         <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     </div>
                 </li>
-                <li><a href="ver_perfil.php">Perfil</a></li>
+                <li>
+                    <a href="ver_perfil.php">
+                        <button class="btn btn-perfil">Perfil</button>
+                    </a>
+                </li>
                 <li><a href="logout.php">Cerrar Sesión</a></li>
             <?php else: ?>
                 <li><a href="index.php">Iniciar Sesión</a></li>
@@ -105,6 +110,6 @@ session_start();
 </footer>
 
 <script src="js/menu_lateral.js"></script>
-<!-- <script src="js/informacion.js"></script> -->
+<script src="js/tabsAyuda.js"></script>
 </body>
 </html>
