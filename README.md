@@ -59,8 +59,7 @@ Gestor de Presupuestos es una aplicación diseñada para ayudar a los jóvenes a
 
 ## *Modelo Entidad-Relación (MER)*
 
-///  FOTO DE EL MER XD  ///
-
+![image](https://github.com/user-attachments/assets/6bdf447e-8364-4205-83e0-2388790d836e)
 
 ## *Requisitos del Sistema*
 
