@@ -27,12 +27,12 @@ if (!$user_id) {
 $stmt = $db->prepare("SELECT usuario, nombre, apellido, email, nacionalidad, foto FROM Usuarios WHERE ID_usuario = ?");
 if (!$stmt) {
     error_log("Error al preparar la consulta: " . $db->error);
-    $error_message = "Ocurrió un error al cargar tu perfil. Por favor, inténtalo de nuevo más tarde.";
+    $error_message = "Ocurriï¿½ un error al cargar tu perfil. Por favor, intï¿½ntalo de nuevo mï¿½s tarde.";
 } else {
     $stmt->bind_param('i', $user_id);
     if (!$stmt->execute()) {
         error_log("Error al ejecutar la consulta: " . $stmt->error);
-        $error_message = "Ocurrió un error al cargar tu perfil. Por favor, inténtalo de nuevo más tarde.";
+        $error_message = "Ocurriï¿½ un error al cargar tu perfil. Por favor, intï¿½ntalo de nuevo mï¿½s tarde.";
     } else {
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
@@ -61,7 +61,7 @@ if (isset($error_message)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
-    <link rel="stylesheet" href="perfil.css">
+    <link rel="stylesheet" href="css/perfil.css">
 </head>
 <body>
 
@@ -78,11 +78,11 @@ if (isset($error_message)) {
             <li><a href="logout.php">Cerrar Sesion</a></li>
         </ul>
     </nav>
-    <!-- Botón de tres puntos para mostrar la barra lateral -->
+    <!-- Botï¿½n de tres puntos para mostrar la barra lateral -->
     <button class="toggle-sidebar-btn-left" onclick="toggleSidebar()">&#x22EE;</button>
 </header>
 
-<!-- Barra lateral fuera de la página por defecto -->
+<!-- Barra lateral fuera de la pï¿½gina por defecto -->
 <aside id="sidebar" class="sidebar">
     <ul>
         <li><a href="dashboard.php">Inicio</a></li>
@@ -92,11 +92,11 @@ if (isset($error_message)) {
         <li><a href="estadisticas.php">Estadisticas</a></li>
         <li><a href="logros.php">Logros</a></li>
     </ul>
-    <!-- Botón de tres puntos dentro de la barra lateral para ocultarla -->
+    <!-- Botï¿½n de tres puntos dentro de la barra lateral para ocultarla -->
     <button class="toggle-sidebar-btn-inside" onclick="toggleSidebar()">&#x22EE;</button>
 </aside>
 
-<!-- Sección Principal -->
+<!-- Secciï¿½n Principal -->
 <main>
     <div class="profile-container">
         <div class="profile-header">
@@ -149,14 +149,14 @@ if (isset($error_message)) {
         </div>
         <div id="graficoFrame" class="frame">
             <div class="frame-content">
-                <p>Gráfico de ejemplo...</p>
+                <p>Grï¿½fico de ejemplo...</p>
             </div>
         </div>
     </div>
 </main>
 
 <!-- Cargar el archivo JavaScript -->
-<script src="perfil.js"></script>
+<script src="js/perfil.js"></script>
 
 </body>
 </html>

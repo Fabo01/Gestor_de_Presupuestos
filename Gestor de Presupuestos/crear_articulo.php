@@ -77,13 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     
     <header class="navbar">
+    <?php if (isset($_SESSION['user_id'])): ?>
         <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">
-            Gestor de Presupuestos
-        </div>
+        <?php endif; ?>
+        <div class="logo">Gestor de Presupuestos</div>
         <nav class="nav">
             <ul>
-                <li>
+                <!-- Verificamos si el usuario ha iniciado sesión -->
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li>
                     <a href="informacion.php">
                         <button class="btn btn-boletines">Ayuda</button>
                     </a>
@@ -94,8 +96,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     </div>
                 </li>
-                <li><a href="perfil.php">Perfil</a></li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
+                <li>
+                    <a href="perfil.php">
+                        <button class="btn btn-perfil">Perfil</button>
+                    </a>
+                </li>
+                <li> 
+                    <a href="logout.php">
+                        <button class="btn btn-logout">Cerrar Sesión</button>
+                    </a></li>
+                <?php else: ?>
+                    <li><a href="index.php">Iniciar Sesión</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
     </header>

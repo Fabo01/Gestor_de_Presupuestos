@@ -100,19 +100,21 @@ $bancos_result = $bancos_stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Gestor de Presupuestos</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/styless.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styless.css">
 </head>
 <body>
 
     <header class="navbar">
+    <?php if (isset($_SESSION['user_id'])): ?>
         <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">
-            Gestor de Presupuestos
-        </div>
+        <?php endif; ?>
+        <div class="logo">Gestor de Presupuestos</div>
         <nav class="nav">
             <ul>
-                <li>
+                <!-- Verificamos si el usuario ha iniciado sesión -->
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li>
                     <a href="informacion.php">
                         <button class="btn btn-boletines">Ayuda</button>
                     </a>
@@ -120,15 +122,24 @@ $bancos_result = $bancos_stmt->get_result();
                 <li>
                     <div class="user-dropdown">
                         <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
                     </div>
                 </li>
-                <li><a href="perfil.php">Perfil</a></li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
+                <li>
+                    <a href="perfil.php">
+                        <button class="btn btn-perfil">Perfil</button>
+                    </a>
+                </li>
+                <li> 
+                    <a href="logout.php">
+                        <button class="btn btn-logout">Cerrar Sesión</button>
+                    </a></li>
+                <?php else: ?>
+                    <li><a href="index.php">Iniciar Sesión</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
     </header>
-
     <aside id="sidebar" class="sidebar">
         <button id="close-btn" class="close-btn">&times;</button>
 
@@ -242,7 +253,7 @@ $bancos_result = $bancos_stmt->get_result();
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
     
 </body>
 </html>
