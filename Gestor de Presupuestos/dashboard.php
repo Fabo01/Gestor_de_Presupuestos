@@ -2,28 +2,28 @@
 require 'Conex.inc';
 session_start();
 
-// Verificar si el usuario ha iniciado sesi贸n
+// Verificar si el usuario ha iniciado sesi髇
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }
 
-// Obtener informaci贸n del usuario
+// Obtener informaci髇 del usuario
 $user_id = $_SESSION['user_id'];
 $usuario = $_SESSION['usuario'];
 
-// Par谩metros de filtro
+// Par醡etros de filtro
 $categoria = isset($_GET['categoria']) ? $_GET['categoria'] : '';
 $banco = isset($_GET['banco']) ? $_GET['banco'] : '';
 $fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
 $fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
 
-// Par谩metros de paginaci贸n
+// Par醡etros de paginaci髇
 $transacciones_por_pagina = 10;
 $pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 $offset = ($pagina_actual - 1) * $transacciones_por_pagina;
 
-// Construir la consulta con filtros y paginaci贸n
+// Construir la consulta con filtros y paginaci髇
 $query = "
     SELECT 
         cb.banco, 
@@ -64,7 +64,7 @@ if (!empty($fecha_fin)) {
     $types .= 's';
 }
 
-// Obtener el n煤mero total de transacciones (para la paginaci贸n)
+// Obtener el n鷐ero total de transacciones (para la paginaci髇)
 $total_query = "SELECT COUNT(*) FROM (" . $query . ") AS total";
 $total_stmt = $db->prepare($total_query);
 $total_stmt->bind_param($types, ...$params);
@@ -73,7 +73,7 @@ $total_stmt->bind_result($total_transacciones);
 $total_stmt->fetch();
 $total_stmt->close();
 
-// Agregar orden y l铆mite a la consulta principal
+// Agregar orden y l韒ite a la consulta principal
 $query .= " ORDER BY t.fecha DESC LIMIT ?, ?";
 $params[] = $offset;
 $params[] = $transacciones_por_pagina;
@@ -84,7 +84,7 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Obtener categor铆as y bancos para los filtros
+// Obtener categor韆s y bancos para los filtros
 $categorias_stmt = $db->prepare("SELECT ID_categoria, nombre FROM Categorias WHERE ID_usuario = ?");
 $categorias_stmt->bind_param('i', $user_id);
 $categorias_stmt->execute();
@@ -100,68 +100,26 @@ $bancos_result = $bancos_stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Gestor de Presupuestos</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/styless.css">
+
+    <!-- Incluir el CSS del header y aside primero -->
+    <link rel="stylesheet" href="header_aside.css">
+    
+    <!-- Incluir el CSS espec韋ico de la p醙ina despu閟 -->
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
-    <header class="navbar">
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <?php endif; ?>
-        <div class="logo">Gestor de Presupuestos</div>
-        <nav class="nav">
-            <ul>
-                <!-- Verificamos si el usuario ha iniciado sesi贸n -->
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>
-                    <a href="informacion.php">
-                        <button class="btn btn-boletines">Ayuda</button>
-                    </a>
-                </li>
-                <li>
-                    <div class="user-dropdown">
-                        <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
-                    </div>
-                </li>
-                <li>
-                    <a href="perfil.php">
-                        <button class="btn btn-perfil">Perfil</button>
-                    </a>
-                </li>
-                <li> 
-                    <a href="logout.php">
-                        <button class="btn btn-logout">Cerrar Sesi贸n</button>
-                    </a></li>
-                <?php else: ?>
-                    <li><a href="index.php">Iniciar Sesi贸n</a></li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-    </header>
-    <aside id="sidebar" class="sidebar">
-        <button id="close-btn" class="close-btn">&times;</button>
-
-        <ul>
-            <li><a href="dashboard.php">Inicio</a></li>
-            <li><a href="bancos.php">Tus Cuentas</a></li>
-            <li><a href="categorias.php">Tus Categor铆as</a></li>
-            <li><a href="articulos.php">Ver Art铆culos</a></li>
-            <li><a href="estadisticas.php">Estad铆sticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
-        </ul>
-    </aside>
+    <!-- Incluir el header y aside -->
+    <?php include 'header_aside.php'; ?>
 
     <main>
-        <h2>Bienvenido, <?php echo htmlspecialchars($usuario); ?></h2>
         <div class="container-gestion">
 
             <h3>Resumen de Transacciones</h3>
 
             <!-- Formulario de Filtros -->
             <form method="GET" action="dashboard.php" class="filter-form">
-                <label for="categoria">Categor铆a:</label>
+                <label for="categoria">Categor韆:</label>
                 <select name="categoria" id="categoria">
                     <option value="">Todas</option>
                     <?php while ($cat = $categorias_result->fetch_assoc()): ?>
@@ -192,18 +150,18 @@ $bancos_result = $bancos_stmt->get_result();
 
             <div class="btn-banco-container">
                 <a href="transacciones.php">
-                    <button class="btn btn-banco">A帽adir Transacci贸n</button>
+                    <button class="btn btn-banco">A馻dir Transacci髇</button>
                 </a>
-            </div> 
+            </div>
 
             <?php if ($result->num_rows > 0): ?>
                 <table>
                     <tr>
                         <th>Banco</th>
                         <th>Monto</th>
-                        <th>Categor铆a</th>
+                        <th>Categor韆</th>
                         <th>Fecha</th>
-                        <th>Descripci贸n</th>
+                        <th>Descripci髇</th>
                     </tr>
 
                     <?php while ($row = $result->fetch_assoc()): ?>
@@ -218,25 +176,12 @@ $bancos_result = $bancos_stmt->get_result();
 
                 </table>
 
-                <!-- Paginaci贸n -->
-                <?php
-                $total_paginas = ceil($total_transacciones / $transacciones_por_pagina);
-                ?>
-
+                <!-- Paginaci髇 -->
                 <div class="pagination">
-                    <?php
-                    // Construir la URL base para los enlaces de paginaci贸n
-                    $query_params = $_GET;
-                    unset($query_params['pagina']);
-                    $base_url = '?' . http_build_query($query_params);
-
-                    if ($pagina_actual > 1):
-                    ?>
+                    <span>P醙ina <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
+                    <?php if ($pagina_actual > 1): ?>
                         <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
                     <?php endif; ?>
-
-                    <span>P谩gina <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
-
                     <?php if ($pagina_actual < $total_paginas): ?>
                         <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
                     <?php endif; ?>
@@ -253,7 +198,11 @@ $bancos_result = $bancos_stmt->get_result();
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="js/menu_lateral.js"></script>
+    <!-- Incluir el JS del header y aside -->
+    <script src="header_aside.js"></script>
+    
+    <!-- Incluir el JS de la p醙ina -->
+    <script src="JS/menu_lateral.js"></script>
     
 </body>
 </html>

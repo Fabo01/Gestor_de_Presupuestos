@@ -7,7 +7,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>Información y Ayuda</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
@@ -31,15 +31,8 @@ session_start();
                     <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
             </li>
-            <li>
-                <a href="perfil.php">
-                    <button class="btn btn-perfil">Perfil</button>
-                </a>
-            </li>
-            <li> 
-                <a href="logout.php">
-                    <button class="btn btn-logout">Cerrar Sesión</button>
-                </a></li>
+            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="logout.php">Cerrar Sesión</a></li>
             <?php else: ?>
                 <li><a href="index.php">Iniciar Sesión</a></li>
             <?php endif; ?>
@@ -179,7 +172,7 @@ session_start();
     <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
 </footer>
 
-<script src="js/menu_lateral.js"></script>
-<script src="js/informacion.js"></script>
+<script src="JS/menu_lateral.js"></script>
+<script src="JS/informacion.js"></script>
 </body>
 </html>
