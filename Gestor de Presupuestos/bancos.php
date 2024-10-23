@@ -228,7 +228,21 @@ $result = $stmt->get_result();
             <label for="nombre_cuenta">Nombre de la Cuenta: </label>
             <input type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
 
+<<<<<<< Updated upstream
             <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
+=======
+                    <!-- Barra de búsqueda -->
+            <form method="GET" action="bancos.php" class="search-form">
+                <label for="buscar-banco"><br>Busca tu Banco</label>
+                <input type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
+                <button type="submit">Buscar</button>
+            </form>
+
+            <!-- Token CSRF para seguridad -->
+            <input type="hidden" name="token" value="<?php echo $token; ?>">
+
+            <button type="submit">Guardar</button>
+>>>>>>> Stashed changes
         </form>
 
         <!-- Barra de búsqueda -->
