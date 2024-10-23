@@ -24,7 +24,7 @@ if (!$user_id) {
     exit();
 }
 
-$stmt = $db->prepare("SELECT username, nombre, apellido, email, nacionalidad, foto_perfil FROM Usuario WHERE ID_usuario = ?");
+$stmt = $db->prepare("SELECT usuario, nombre, apellido, email, nacionalidad, foto FROM Usuarios WHERE ID_usuario = ?");
 if (!$stmt) {
     error_log("Error al preparar la consulta: " . $db->error);
     $error_message = "Ocurrió un error al cargar tu perfil. Por favor, inténtalo de nuevo más tarde.";
@@ -36,12 +36,12 @@ if (!$stmt) {
     } else {
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
-            $username = htmlspecialchars($row['username']);
+            $username = htmlspecialchars($row['usuario']);
             $email = htmlspecialchars($row['email']);
             $nombre = htmlspecialchars($row['nombre']);
             $apellido = htmlspecialchars($row['apellido']);
             $nacionalidad = htmlspecialchars($row['nacionalidad']);
-            $foto_perfil = htmlspecialchars($row['foto_perfil']);
+            $foto_perfil = htmlspecialchars($row['foto']);
         } else {
             $error_message = "Usuario no encontrado.";
         }
@@ -60,7 +60,6 @@ if (isset($error_message)) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="CSS/style.css">
 </head>
@@ -80,24 +79,28 @@ if (isset($error_message)) {
             </li>
             <li>
                 <div class="user-dropdown">
-                    <img src="<?php echo isset($foto_perfil) && !empty($foto_perfil) ? 'uploads/' . $foto_perfil : 'img/user.jpg'; ?>" alt="Perfil" class="user-avatar">
+                    <img src="img/user.jpg" alt="Perfil" class="user-avatar">
                     <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
             </li>
+            <li><a href="perfil.php">Perfil</a></li>
             <li><a href="logout.php">Cerrar Sesión</a></li>
         </ul>
     </nav>
 </header>
 
-<aside id="sidebar" class="sidebar">
-    <button id="close-btn" class="close-btn">&times;</button>
-    <ul>
-        <li><a href="dashboard.php">Inicio</a></li>
-        <li><a href="articulos.php">Ver Artículos</a></li>
-        <li><a href="estadisticas.php">Estadísticas</a></li>
-        <li><a href="logros.php">Logros</a></li>
-    </ul>
-</aside>
+    <aside id="sidebar" class="sidebar">
+        <button id="close-btn" class="close-btn">&times;</button>
+
+        <ul>
+            <li><a href="dashboard.php">Inicio</a></li>
+            <li><a href="bancos.php">Tus Cuentas</a></li>
+            <li><a href="categorias.php">Tus Categorías</a></li>
+            <li><a href="articulos.php">Ver Artículos</a></li>
+            <li><a href="estadisticas.php">Estadísticas</a></li>
+            <li><a href="logros.php">Logros</a></li>
+        </ul>
+    </aside>
 
 <div class="container">
     <div class="profile-content">

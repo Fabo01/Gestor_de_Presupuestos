@@ -1,5 +1,15 @@
 <?php
 require 'Conex.inc';
+
+// Mover session_set_cookie_params antes de session_start si es necesario
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Strict',
+]);
 session_start();
 
 if (isset($_SESSION['user_id'])) {
@@ -14,39 +24,42 @@ $token = $_SESSION['token'];
 
 $mensaje = '';
 $error = '';
-$username = '';
+$usuario = '';
 $email = '';
-$name = '';
-$lastname = '';
+$nombre = '';
+$apellido = '';
 $nacionalidad = '';
-$fechanac = '';
+$nacimiento = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
     } else {
-        $username = htmlspecialchars(trim($_POST['username']));
-        $email = htmlspecialchars(trim($_POST['email']));
+        // Recopilar y sanitizar los datos de entrada
+        $usuario = trim($_POST['username']);
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
-        $name = htmlspecialchars(trim($_POST['name']));
-        $lastname = htmlspecialchars(trim($_POST['lastname']));
-        $nacionalidad = htmlspecialchars(trim($_POST['nacionalidad']));
-        $fechanac = htmlspecialchars(trim($_POST['fechanac']));
+        $nombre = trim($_POST['name']);
+        $apellido = trim($_POST['lastname']);
+        $nacionalidad = trim($_POST['nacionalidad']);
+        $nacimiento = $_POST['fechanac'];
 
-        if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($name) || empty($lastname) || empty($nacionalidad) || empty($fechanac)) {
+        // Validación de entradas
+        if (empty($usuario) || empty($email) || empty($password) || empty($confirm_password) || empty($nombre) || empty($apellido) || empty($nacionalidad) || empty($nacimiento)) {
             $error = "Por favor, completa todos los campos.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "El correo electrónico no es válido.";
         } elseif ($password !== $confirm_password) {
             $error = "Las contraseñas no coinciden.";
-        } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+        } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $usuario)) {
             $error = "El nombre de usuario debe tener entre 3 y 20 caracteres y solo puede contener letras, números y guiones bajos.";
         } elseif (strlen($password) < 8) {
             $error = "La contraseña debe tener al menos 8 caracteres.";
         } else {
-            $stmt = $db->prepare("SELECT COUNT(*) FROM Usuario WHERE email = ? OR username = ?");
-            $stmt->bind_param('ss', $email, $username);
+            // Verificar si el correo electrónico o nombre de usuario ya existen
+            $stmt = $db->prepare("SELECT COUNT(*) FROM Usuarios WHERE email = ? OR usuario = ?");
+            $stmt->bind_param('ss', $email, $usuario);
             $stmt->execute();
             $stmt->bind_result($count);
             $stmt->fetch();
@@ -55,11 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($count > 0) {
                 $error = "El correo electrónico o nombre de usuario ya están en uso.";
             } else {
+                // Encriptar la contraseña de forma segura
                 $options = ['cost' => 12];
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options);
 
-                $stmt = $db->prepare("INSERT INTO Usuario (username, email, password, nombre, apellido, nacionalidad, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param('sssssss', $username, $email, $hashed_password, $name, $lastname, $nacionalidad, $fechanac);
+                // Insertar el nuevo usuario en la base de datos
+                $stmt = $db->prepare("INSERT INTO Usuarios (usuario, email, password, nombre, apellido, nacionalidad, nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param('sssssss', $usuario, $email, $hashed_password, $nombre, $apellido, $nacionalidad, $nacimiento);
 
                 if ($stmt->execute()) {
                     header('Location: index.php?registro=exitoso');
@@ -80,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Registro de Usuario</title>
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="CSS/login.css">
 </head>
 <body class="login-page">
     <div class="aspect-ratio-container">
@@ -103,10 +118,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <main>
                 <form action="register.php" method="POST" class="form-style">
-                    <input type="hidden" name="token" value="<?php echo $token; ?>">
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                     <div class="form-group">
                         <label for="username">Nombre de Usuario:</label>
-                        <input type="text" name="username" placeholder="Nombre de Usuario" value="<?php echo htmlspecialchars($username); ?>" required><br>
+                        <input type="text" name="username" placeholder="Nombre de Usuario" value="<?php echo htmlspecialchars($usuario); ?>" required><br>
                     </div>
                     <div class="form-group">
                         <label for="email">Correo Electrónico:</label>
@@ -122,11 +137,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="form-group">
                         <label for="name">Nombre:</label>
-                        <input type="text" name="name" placeholder="Nombre" value="<?php echo htmlspecialchars($name); ?>" required><br>
+                        <input type="text" name="name" placeholder="Nombre" value="<?php echo htmlspecialchars($nombre); ?>" required><br>
                     </div>
                     <div class="form-group">
                         <label for="lastname">Apellido:</label>
-                        <input type="text" name="lastname" placeholder="Apellido" value="<?php echo htmlspecialchars($lastname); ?>" required><br>
+                        <input type="text" name="lastname" placeholder="Apellido" value="<?php echo htmlspecialchars($apellido); ?>" required><br>
                     </div>
                     <div class="form-group">
                         <label for="nacionalidad">Nacionalidad:</label>
@@ -134,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="form-group">
                         <label for="fechanac">Fecha de Nacimiento:</label>
-                        <input type="date" name="fechanac" placeholder="Fecha de Nacimiento" value="<?php echo htmlspecialchars($fechanac); ?>" required><br>
+                        <input type="date" name="fechanac" placeholder="Fecha de Nacimiento" value="<?php echo htmlspecialchars($nacimiento); ?>" required><br>
                     </div>
                     <div class="button-group">
                         <button type="submit">Registrarse</button>

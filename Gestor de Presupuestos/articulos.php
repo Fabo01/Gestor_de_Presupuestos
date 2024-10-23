@@ -26,6 +26,7 @@ if (!$user_id) {
 
 $articulos_por_pagina = 5;
 
+// Obtener el número total de artículos
 $stmt_total = $db->prepare("SELECT COUNT(*) FROM Articulos");
 if (!$stmt_total) {
     error_log("Error al preparar la consulta: " . $db->error);
@@ -48,9 +49,9 @@ if (!$stmt_total) {
         $offset = ($pagina_actual - 1) * $articulos_por_pagina;
 
         $stmt = $db->prepare("
-            SELECT A.ID_articulo, A.titulo, A.contenido, A.fecha_creacion, U.username
+            SELECT A.ID_articulo, A.titulo, A.contenido, A.fecha_creacion, U.usuario
             FROM Articulos A
-            INNER JOIN Usuario U ON A.ID_usuario = U.ID_usuario
+            INNER JOIN Usuarios U ON A.ID_usuario = U.ID_usuario
             ORDER BY A.fecha_creacion DESC
             LIMIT ?, ?
         ");
@@ -69,47 +70,48 @@ if (!$stmt_total) {
     }
 }
 ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro</title>
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="CSS/articulos.css">
 </head>
 <body>
-    <header class="navbar">
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">
-            Gestor de Presupuestos
-        </div>
-        <nav class="nav">
-            <ul>
-                <li>
-                    <a href="informacion.php">
-                            <button class="btn btn-boletines">Ayuda</button>
-                    </a>
-                </li>
-                <li>
-                    <div class="user-dropdown">
-                        <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                    </div>
-                </li>
-                <li><a href="ver_perfil.php">Perfil</a></li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
-            </ul>
-        </nav>
-    </header>
+<header class="navbar">
+    <button id="menu-btn" class="menu-btn">&#9776;</button>
+    <div class="logo">
+        Gestor de Presupuestos
+    </div>
+    <nav class="nav">
+        <ul>
+            <li>
+                <a href="informacion.php">
+                    <button class="btn btn-boletines">Ayuda</button>
+                </a>
+            </li>
+            <li>
+                <div class="user-dropdown">
+                    <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                    <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                </div>
+            </li>
+            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="logout.php">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+</header>
 
     <aside id="sidebar" class="sidebar">
         <button id="close-btn" class="close-btn">&times;</button>
+
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
-            <li><a href="estadistica.php">Estadísticas</a></li>
+            <li><a href="bancos.php">Tus Cuentas</a></li>
+            <li><a href="categorias.php">Tus Categorías</a></li>
+            <li><a href="articulos.php">Ver Artículos</a></li>
+            <li><a href="estadisticas.php">Estadísticas</a></li>
             <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
@@ -125,7 +127,6 @@ if (!$stmt_total) {
         <section id="articulos">
             <h2>Artículos Recientes</h2>
 
-<!--------------------------------------------------------------------------CODIGO PHP---------------------------------------------------------------------------------------->
             <?php
             if (isset($error_message)) {
                 echo "<p>$error_message</p>";
@@ -137,7 +138,7 @@ if (!$stmt_total) {
                     echo "<article>
                             <h3>" . htmlspecialchars($row['titulo']) . "</h3>
                             <p>" . nl2br(htmlspecialchars(substr($row['contenido'], 0, 200))) . "...</p>
-                            <small>Escrito por: " . htmlspecialchars($row['username']) . " el " . htmlspecialchars($fecha_formateada) . "</small>
+                            <small>Escrito por: " . htmlspecialchars($row['usuario']) . " el " . htmlspecialchars($fecha_formateada) . "</small>
                             <br>
                             <a href='ver_articulo.php?id_articulo=" . urlencode($row['ID_articulo']) . "'>Leer más</a>
                         </article>
@@ -164,13 +165,12 @@ if (!$stmt_total) {
                 echo '</div>';
             }
             ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
         </section>
     </main>
     <footer>
         <p>&copy; 2024 Foro de Artículos Informativos. Todos los derechos reservados.</p>
     </footer>
 
-<script src="JS/menu_lateral.js"></script>
+    <script src="JS/menu_lateral.js"></script>
 </body>
 </html>

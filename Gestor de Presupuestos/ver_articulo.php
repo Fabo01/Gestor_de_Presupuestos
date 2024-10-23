@@ -31,9 +31,9 @@ if (!$id_articulo) {
 }
 
 $stmt = $db->prepare("
-    SELECT A.titulo, A.contenido, A.fecha_creacion, U.username
+    SELECT A.titulo, A.contenido, A.fecha_creacion, U.usuario
     FROM Articulos A
-    INNER JOIN Usuario U ON A.ID_usuario = U.ID_usuario
+    INNER JOIN Usuarios U ON A.ID_usuario = U.ID_usuario
     WHERE A.ID_articulo = ?
 ");
 if (!$stmt) {
@@ -59,9 +59,9 @@ $articulo = $result->fetch_assoc();
 $stmt->close();
 
 $stmt = $db->prepare("
-    SELECT C.contenido, C.fecha_creacion, U.username
+    SELECT C.contenido, C.fecha_creacion, U.usuario
     FROM Comentarios C
-    INNER JOIN Usuario U ON C.ID_usuario = U.ID_usuario
+    INNER JOIN Usuarios U ON C.ID_usuario = U.ID_usuario
     WHERE C.ID_articulo = ?
     ORDER BY C.fecha_creacion ASC
 ");
@@ -113,27 +113,30 @@ $csrf_token = $_SESSION['csrf_token'];
                     <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
             </li>
-            <li><a href="ver_perfil.php">Perfil</a></li>
+            <li><a href="perfil.php">Perfil</a></li>
             <li><a href="logout.php">Cerrar Sesión</a></li>
         </ul>
     </nav>
 </header>
 
-<aside id="sidebar" class="sidebar">
-    <button id="close-btn" class="close-btn">&times;</button>
-    <ul>
-        <li><a href="dashboard.php">Inicio</a></li>
-        <li><a href="articulos.php">Ver Artículos</a></li>
-        <li><a href="estadistica.php">Estadísticas</a></li>
-        <li><a href="logros.php">Logros</a></li>
-    </ul>
-</aside>
+    <aside id="sidebar" class="sidebar">
+        <button id="close-btn" class="close-btn">&times;</button>
+
+        <ul>
+            <li><a href="dashboard.php">Inicio</a></li>
+            <li><a href="bancos.php">Tus Cuentas</a></li>
+            <li><a href="categorias.php">Tus Categorías</a></li>
+            <li><a href="articulos.php">Ver Artículos</a></li>
+            <li><a href="estadisticas.php">Estadísticas</a></li>
+            <li><a href="logros.php">Logros</a></li>
+        </ul>
+    </aside>
 
 <main class="main-articulo">
     <article>
         <h2><?php echo htmlspecialchars($articulo['titulo']); ?></h2>
         <p><?php echo nl2br(htmlspecialchars($articulo['contenido'])); ?></p>
-        <small>Escrito por: <?php echo htmlspecialchars($articulo['username']); ?> el <?php echo date('d/m/Y H:i', strtotime($articulo['fecha_creacion'])); ?></small>
+        <small>Escrito por: <?php echo htmlspecialchars($articulo['usuario']); ?> el <?php echo date('d/m/Y H:i', strtotime($articulo['fecha_creacion'])); ?></small>
     </article>
     <hr>
     <section id="comentarios">
@@ -148,7 +151,7 @@ $csrf_token = $_SESSION['csrf_token'];
                 while ($comentario = $comentarios->fetch_assoc()) {
                     echo "<div class='comentario'>
                             <p>" . nl2br(htmlspecialchars($comentario['contenido'])) . "</p>
-                            <small>Por " . htmlspecialchars($comentario['username']) . " el " . date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])) . "</small>
+                            <small>Por " . htmlspecialchars($comentario['usuario']) . " el " . date('d/m/Y H:i', strtotime($comentario['fecha_creacion'])) . "</small>
                         </div>";
                 }
             } else {
@@ -171,6 +174,7 @@ $csrf_token = $_SESSION['csrf_token'];
             </div>
             <button type="submit">Enviar</button>
         </form>
+        <a href="articulos.php">Volver</a>
     </section>
 </main>
 
