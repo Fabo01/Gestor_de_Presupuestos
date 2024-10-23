@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require 'Conex.inc';
 
+// Mover session_set_cookie_params antes de session_start
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -28,11 +29,15 @@ $token = $_SESSION['token'];
 $error = '';
 $email = '';
 
+// Habilitar la visualización de errores (solo en desarrollo)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
     } else {
-        $email = htmlspecialchars(trim($_POST['email']));
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
 
         if (empty($email) || empty($password)) {
@@ -60,20 +65,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (empty($error)) {
+                // Actualizar la consulta SQL con los nuevos nombres de campos
                 $stmt = $db->prepare("SELECT ID_usuario, usuario, nombre, password FROM Usuarios WHERE email = ?");
                 $stmt->bind_param('s', $email);
                 $stmt->execute();
                 $stmt->store_result();
 
                 if ($stmt->num_rows > 0) {
-                    $stmt->bind_result($ID_usuario, $username, $name, $hashed_password);
+                    // Actualizar los nombres de las variables para que coincidan con los campos
+                    $stmt->bind_result($ID_usuario, $usuario, $nombre, $hashed_password);
                     $stmt->fetch();
 
                     if (password_verify($password, $hashed_password)) {
                         session_regenerate_id(true);
                         $_SESSION['user_id'] = $ID_usuario;
-                        $_SESSION['username'] = $username;
-                        $_SESSION['name'] = $name;
+                        $_SESSION['usuario'] = $usuario;
+                        $_SESSION['nombre'] = $nombre;
                         $_SESSION['login_attempts'] = 0;
                         header('Location: dashboard.php');
                         exit();
@@ -100,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="CSS/login.css">
 </head>
 
 <body class="login-page">
@@ -118,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
                 <form action="index.php" method="POST" class="form-style">
-                    <input type="hidden" name="token" value="<?php echo $token; ?>">
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                     <div class="form-group">
                         <label for="email">Correo Electrónico:</label>
                         <input type="email" name="email" placeholder="Correo electrónico" value="<?php echo htmlspecialchars($email); ?>" required><br>

@@ -1,183 +1,204 @@
-/* Global Styles */
-body, html {
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f4f8;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #e0e0e0;
-    color: #333;
 }
 
-/* Navbar */
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 4px solid #0056b3;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+}
+
 .navbar {
-    background-color: #333;
-    color: #fff;
+    background-color: #007bff;
+    padding: 10px;
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 10px 20px;
+    justify-content: center;
+    margin: 0;
 }
 
-.menu-btn {
-    font-size: 20px;
-    cursor: pointer;
-    border: none;
-    background: none;
-    color: #fff;
-    margin-right: 10px;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-.nav {
-    margin-left: auto;
-}
-
-.nav ul {
+.navbar ul {
     list-style: none;
-    display: flex;
     margin: 0;
     padding: 0;
-}
-
-.nav li {
-    margin: 0 15px;
-}
-
-.nav a {
-    color: #fff;
-    text-decoration: none;
-}
-
-.user-dropdown {
     display: flex;
-    align-items: center;
+}
+
+.navbar ul li {
     margin-right: 20px;
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-/* Sidebar */
-.sidebar {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    color: #fff;
-    overflow-x: hidden;
-    transition: 0.5s;
-    padding-top: 60px;
-}
-
-.sidebar a {
-    padding: 15px 25px;
+.navbar ul li a {
+    color: white;
     text-decoration: none;
-    font-size: 18px;
-    color: #fff;
-    display: block;
-    transition: 0.3s;
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #0056b3;
+    transition: background-color 0.3s ease;
 }
 
-.sidebar a:hover {
-    background-color: #575757;
+.navbar ul li a:hover {
+    background-color: #003f7f;
 }
 
-.close-btn {
+/* Botón de tres puntos para mostrar la barra lateral */
+.toggle-sidebar-btn-left {
     position: absolute;
+    left: 20px;
     top: 15px;
-    right: 25px;
-    font-size: 36px;
-    cursor: pointer;
     background: none;
     border: none;
-    color: #fff;
-}
-
-/* Main Content */
-main {
-    padding: 20px;
-    max-width: 900px;
-    margin: 40px auto;
-}
-
-.container-gestion {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-}
-
-.container-gestion h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-}
-
-/* Lists Styles */
-.lista-categorias {
-    list-style-type: none;
-    padding: 0;
-}
-
-.lista-categorias li {
-    margin-bottom: 20px;
-}
-
-/* Button Group - Alinear botones en fila con margen */
-.btn-group.horizontal-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-/* Margen adicional alrededor de los botones */
-.btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
+    font-size: 24px;
+    color: white;
     cursor: pointer;
-    margin: 10px 0;
 }
 
-.btn-categorias {
-    background-color: #008CFF; /* Azul */
-    color: #fff;
+/* Botón de tres puntos dentro de la barra lateral */
+.toggle-sidebar-btn-inside {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
 }
 
-.btn-categorias:hover {
-    background-color: #006bb3; /* Tono mÃ¡s oscuro al hacer hover */
+/* Barra lateral que se superpone sobre el header */
+.sidebar {
+    background-color: #f9f9f9;
+    padding: 15px;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: -300px;
+    height: 100%;
+    overflow-y: auto;
+    border-right: 2px solid #ccc;
+    transition: left 0.3s ease;
+    z-index: 101;
 }
 
-.btn-banco-container {
+.sidebar-visible {
+    left: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 30px;
+}
+
+.sidebar ul li {
     margin-bottom: 20px;
-    margin-left: auto;
 }
 
-.btn-banco {
-    background-color: #FF8C00; /* Naranja */
-    color: #fff;
+.sidebar ul li a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #333;
+    background-color: #ddd;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
-.btn-banco:hover {
-    background-color: #e69500; /* Tono mÃ¡s oscuro al hacer hover */
+.sidebar ul li a:hover {
+    background-color: #bbb;
 }
 
-/* Footer */
-footer {
-    margin-top: 20px;
+.profile-container {
+    margin-left: 290px;
+    margin-top: 80px;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.profile-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 40px;
+}
+
+.profile-info {
+    font-size: 16px;
+}
+
+.profile-info h2 {
+    margin: 0;
+    color: #007bff;
+}
+
+.content-sections {
+    margin-left: 290px;
+    margin-top: 30px;
+}
+
+/* Botones más pequeños para logros, seguridad, etc. */
+.button-frame {
+    background-color: #007bff;
+    padding: 8px; /* Reducimos el padding para hacer los botones más pequeños */
+    margin: 10px 0; /* Menor separación entre los botones */
+    border-radius: 30px; /* Bordes redondeados más pequeños */
+    width: 70%; /* Ajustamos el ancho de los botones */
+    color: white;
     text-align: center;
-    font-size: 12px;
-    color: #777;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.button-frame button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px; /* Disminuimos el tamaño de la fuente */
+    width: 100%;
+    height: 100%;
+    padding: 8px 0; /* Reducimos el padding interno del botón */
+}
+
+.button-frame:hover {
+    background-color: #0056b3;
+}
+
+/* Frames deslizantes */
+.frame {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+    background-color: #f1f1f1;
+    margin: 10px 0;
+    padding: 0 15px;
+    border-radius: 10px;
+}
+
+.frame.active {
+    max-height: 300px;
+}
+
+.frame-content {
+    padding: 15px;
+    font-size: 14px;
 }

@@ -1,6 +1,7 @@
 <?php
 require 'Conex.inc';
 
+// Configurar las cookies de sesión de manera segura
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -12,6 +13,7 @@ session_set_cookie_params([
 
 session_start();
 
+// Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
@@ -24,6 +26,7 @@ if (!$ID_usuario) {
     exit();
 }
 
+// Generar token CSRF si no existe
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -35,12 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || !hash_equals($csrf_token, $_POST['csrf_token'])) {
         $message = "Token CSRF inválido.";
     } else {
-        $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_STRING);
-        $contenido = filter_input(INPUT_POST, 'contenido', FILTER_SANITIZE_STRING);
+        // Sanitizar y validar los datos de entrada
+        $titulo = trim($_POST['titulo']);
+        $contenido = trim($_POST['contenido']);
 
         if (empty($titulo) || empty($contenido)) {
             $message = "El título y el contenido no pueden estar vacíos.";
         } else {
+            // Preparar la consulta SQL
             $stmt = $db->prepare("INSERT INTO Articulos (titulo, contenido, ID_usuario, fecha_creacion) VALUES (?, ?, ?, NOW())");
             if (!$stmt) {
                 error_log("Error al preparar la consulta: " . $db->error);
@@ -48,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $stmt->bind_param('ssi', $titulo, $contenido, $ID_usuario);
                 if ($stmt->execute()) {
-                    $message = "Artículo creado exitosamente.";
                     header('Location: mis_articulos.php?mensaje=creado');
                     exit();
                 } else {
@@ -61,8 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -70,18 +72,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Artículo</title>
     <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/articulos.css">
 </head>
 <body>
+    
     <header class="navbar">
+    <?php if (isset($_SESSION['user_id'])): ?>
         <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">
-            Gestor de Presupuestos
-        </div>
+        <?php endif; ?>
+        <div class="logo">Gestor de Presupuestos</div>
         <nav class="nav">
             <ul>
-                <li>
+                <!-- Verificamos si el usuario ha iniciado sesión -->
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <li>
                     <a href="informacion.php">
-                            <button class="btn btn-boletines">Ayuda</button>
+                        <button class="btn btn-boletines">Ayuda</button>
                     </a>
                 </li>
                 <li>
@@ -91,11 +97,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </li>
                 <li>
-                    <a href="ver_perfil.php">
+                    <a href="perfil.php">
                         <button class="btn btn-perfil">Perfil</button>
                     </a>
                 </li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
+                <li> 
+                    <a href="logout.php">
+                        <button class="btn btn-logout">Cerrar Sesión</button>
+                    </a></li>
+                <?php else: ?>
+                    <li><a href="index.php">Iniciar Sesión</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
     </header>
@@ -105,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
-            <li><a href="estadistica.php">Estadísticas</a></li>
+            <li><a href="estadisticas.php">Estadísticas</a></li>
             <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
@@ -113,14 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main>
         <h1>Crear un nuevo artículo</h1>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
         <?php if ($message): ?>
             <p class="mensaje"><?php echo htmlspecialchars($message); ?></p>
         <?php endif; ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
         <form method="post" action="crear_articulo.php">
-            <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
             <div class="form-group">
                 <label for="titulo">Título:</label>
                 <input type="text" id="titulo" name="titulo" required>

@@ -2,198 +2,260 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require 'Conex.inc';
-
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '',
-    'secure' => isset($_SERVER['HTTPS']),
-    'httponly' => true,
-    'samesite' => 'Strict',
-]);
-
 session_start();
 
+// Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }
 
-$mensaje = '';
-if (isset($_GET['success'])) {
-    switch ($_GET['success']) {
-        case 'banco':
-            $mensaje = "Banco añadido correctamente.";
-            break;
-        case 'categoria':
-            $mensaje = "Categoría añadida correctamente.";
-            break;
-        case 'transaccion':
-            $mensaje = "Transacción añadida correctamente.";
-            break;
-        default:
-            $mensaje = "";
-            break;
-    }
-}
-?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+// Obtener información del usuario
+$user_id = $_SESSION['user_id'];
+$usuario = $_SESSION['usuario'];
 
+// Parámetros de filtro
+$categoria = isset($_GET['categoria']) ? $_GET['categoria'] : '';
+$banco = isset($_GET['banco']) ? $_GET['banco'] : '';
+$fecha_inicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
+$fecha_fin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
+
+// Parámetros de paginación
+$transacciones_por_pagina = 10;
+$pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$offset = ($pagina_actual - 1) * $transacciones_por_pagina;
+
+// Construir la consulta con filtros y paginación
+$query = "
+    SELECT 
+        cb.banco, 
+        t.monto, 
+        c.nombre AS categoria, 
+        t.fecha, 
+        t.descripcion 
+    FROM Transacciones t
+    JOIN Cuentas_de_banco cb ON t.ID_banco = cb.ID_banco
+    JOIN Categorias c ON t.ID_categoria = c.ID_categoria
+    WHERE t.ID_usuario = ?
+";
+
+$params = [$user_id];
+$types = 'i';
+
+if (!empty($categoria)) {
+    $query .= " AND c.ID_categoria = ?";
+    $params[] = $categoria;
+    $types .= 'i';
+}
+
+if (!empty($banco)) {
+    $query .= " AND cb.ID_banco = ?";
+    $params[] = $banco;
+    $types .= 'i';
+}
+
+if (!empty($fecha_inicio)) {
+    $query .= " AND t.fecha >= ?";
+    $params[] = $fecha_inicio;
+    $types .= 's';
+}
+
+if (!empty($fecha_fin)) {
+    $query .= " AND t.fecha <= ?";
+    $params[] = $fecha_fin;
+    $types .= 's';
+}
+
+// Obtener el número total de transacciones (para la paginación)
+$total_query = "SELECT COUNT(*) FROM (" . $query . ") AS total";
+$total_stmt = $db->prepare($total_query);
+$total_stmt->bind_param($types, ...$params);
+$total_stmt->execute();
+$total_stmt->bind_result($total_transacciones);
+$total_stmt->fetch();
+$total_stmt->close();
+
+// Agregar orden y límite a la consulta principal
+$query .= " ORDER BY t.fecha DESC LIMIT ?, ?";
+$params[] = $offset;
+$params[] = $transacciones_por_pagina;
+$types .= 'ii';
+
+$stmt = $db->prepare($query);
+$stmt->bind_param($types, ...$params);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Obtener categorías y bancos para los filtros
+$categorias_stmt = $db->prepare("SELECT ID_categoria, nombre FROM Categorias WHERE ID_usuario = ?");
+$categorias_stmt->bind_param('i', $user_id);
+$categorias_stmt->execute();
+$categorias_result = $categorias_stmt->get_result();
+
+$bancos_stmt = $db->prepare("SELECT ID_banco, banco FROM Cuentas_de_banco WHERE ID_usuario = ?");
+$bancos_stmt->bind_param('i', $user_id);
+$bancos_stmt->execute();
+$bancos_result = $bancos_stmt->get_result();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Dashboard - Gestor de Presupuestos</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/styless.css">
 </head>
-
 <body>
 
     <header class="navbar">
+    <?php if (isset($_SESSION['user_id'])): ?>
         <button id="menu-btn" class="menu-btn">&#9776;</button>
-            <div class="logo">
-                Gestor de Presupuestos
-            </div>
-
-            <nav class="nav">
-                <ul>
+        <?php endif; ?>
+        <div class="logo">Gestor de Presupuestos</div>
+        <nav class="nav">
+            <ul>
+                <!-- Verificamos si el usuario ha iniciado sesión -->
+                <?php if (isset($_SESSION['user_id'])): ?>
                     <li>
-                        <a href="informacion.php">
-                            <button class="btn btn-boletines">Ayuda</button>
-                        </a>
-                    </li>
-
-                    <li>
-                        <div class="user-dropdown">
-                            <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                            <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                        </div>
-                    </li>
-
-                    <li>
-                        <a href="ver_perfil.php">
-                            <button class="btn btn-perfil">Perfil</button>
-                        </a>
-                    </li>
-                    <li><a href="logout.php">Cerrar Sesión</a></li>
-                </ul>
-            </nav>
+                    <a href="informacion.php">
+                        <button class="btn btn-boletines">Ayuda</button>
+                    </a>
+                </li>
+                <li>
+                    <div class="user-dropdown">
+                        <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
+                    </div>
+                </li>
+                <li>
+                    <a href="perfil.php">
+                        <button class="btn btn-perfil">Perfil</button>
+                    </a>
+                </li>
+                <li> 
+                    <a href="logout.php">
+                        <button class="btn btn-logout">Cerrar Sesión</button>
+                    </a></li>
+                <?php else: ?>
+                    <li><a href="index.php">Iniciar Sesión</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
     </header>
-
     <aside id="sidebar" class="sidebar">
         <button id="close-btn" class="close-btn">&times;</button>
 
         <ul>
+            <li><a href="dashboard.php">Inicio</a></li>
+            <li><a href="bancos.php">Tus Cuentas</a></li>
+            <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
-            <li><a href="estadistica.php">Estadísticas</a></li>
+            <li><a href="estadisticas.php">Estadísticas</a></li>
             <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-    <?php if (!empty($mensaje)): ?>
-        <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
-    <?php endif; ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
     <main>
-        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['name']); ?></h2>
+        <h2>Bienvenido, <?php echo htmlspecialchars($usuario); ?></h2>
         <div class="container-gestion">
 
-            <h3>Mis cuentas</h3>
-            <ul class="lista-cuentas">
+            <h3>Resumen de Transacciones</h3>
 
-                <div class="btn-banco-container">
-                    <a href="añadir_nuevo_banco.php">
-                        <button class="btn-banco">Añadir Banco</button>
-                    </a>
-                </div> 
+            <!-- Formulario de Filtros -->
+            <form method="GET" action="dashboard.php" class="filter-form">
+                <label for="categoria">Categoría:</label>
+                <select name="categoria" id="categoria">
+                    <option value="">Todas</option>
+                    <?php while ($cat = $categorias_result->fetch_assoc()): ?>
+                        <option value="<?php echo $cat['ID_categoria']; ?>" <?php if ($categoria == $cat['ID_categoria']) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($cat['nombre']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+                <label for="banco">Banco:</label>
+                <select name="banco" id="banco">
+                    <option value="">Todos</option>
+                    <?php while ($ban = $bancos_result->fetch_assoc()): ?>
+                        <option value="<?php echo $ban['ID_banco']; ?>" <?php if ($banco == $ban['ID_banco']) echo 'selected'; ?>>
+                            <?php echo htmlspecialchars($ban['banco']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+
+                <label for="fecha_inicio">Desde:</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" value="<?php echo htmlspecialchars($fecha_inicio); ?>">
+
+                <label for="fecha_fin">Hasta:</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>">
+
+                <button type="submit">Filtrar</button>
+            </form>
+
+            <div class="btn-banco-container">
+                <a href="transacciones.php">
+                    <button class="btn btn-banco">Añadir Transacción</button>
+                </a>
+            </div> 
+
+            <?php if ($result->num_rows > 0): ?>
+                <table>
+                    <tr>
+                        <th>Banco</th>
+                        <th>Monto</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                    </tr>
+
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['banco']); ?></td>
+                            <td><?php echo htmlspecialchars(number_format($row['monto'], 2)); ?></td>
+                            <td><?php echo htmlspecialchars($row['categoria']); ?></td>
+                            <td><?php echo htmlspecialchars(date('d-m-Y', strtotime($row['fecha']))); ?></td>
+                            <td><?php echo htmlspecialchars($row['descripcion']); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+
+                </table>
+
+                <!-- Paginación -->
                 <?php
-                $stmt = $db->prepare("SELECT ID_banco, banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_usuario = ?");
-                if (!$stmt) {
-                    error_log("Error al preparar la consulta: " . $db->error);
-                    echo "<p>Ocurrió un error al cargar tus cuentas. Por favor, inténtalo de nuevo más tarde.</p>";
-                    exit();
-                }
-
-                $stmt->bind_param('i', $_SESSION['user_id']);
-                if (!$stmt->execute()) {
-                    error_log("Error al ejecutar la consulta: " . $stmt->error);
-                    echo "<p>Ocurrió un error al cargar tus cuentas. Por favor, inténtalo de nuevo más tarde.</p>";
-                    exit();
-                }
-
-                $result = $stmt->get_result();
-
-                while ($row = $result->fetch_assoc()) {
-                    echo "<li>
-                            <strong>" . htmlspecialchars($row['banco'] ?? '', ENT_QUOTES, 'UTF-8') . " - " . htmlspecialchars($row['tipo'] ?? '', ENT_QUOTES, 'UTF-8') . " (" . htmlspecialchars($row['nombre'] ?? '', ENT_QUOTES, 'UTF-8') . ")</strong>
-                            <div class='btn-group'>
-                                <a href='ver_categorias.php?id_banco=" . htmlspecialchars($row['ID_banco'] ?? '', ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn-categorias'>Ver Categorías</button>
-                                </a>
-                                
-                                <!-- Formulario para eliminar banco -->
-                                <form action='gestionar_bancos.php' method='POST' style='display:inline;'>
-                                    <input type='hidden' name='action' value='borrar_banco'>
-                                    <input type='hidden' name='ID_banco' value='" . htmlspecialchars($row['ID_banco'] ?? '', ENT_QUOTES, 'UTF-8') . "'>
-                                    <button type='submit' class='btn-delete' onclick='return confirm(\"¿Estás seguro de que deseas eliminar este banco?\");'>Eliminar Banco</button>
-                                </form>
-                            </div>
-                        </li>";
-                }
-                $stmt->close();                
+                $total_paginas = ceil($total_transacciones / $transacciones_por_pagina);
                 ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
-            </ul>
+                <div class="pagination">
+                    <?php
+                    // Construir la URL base para los enlaces de paginación
+                    $query_params = $_GET;
+                    unset($query_params['pagina']);
+                    $base_url = '?' . http_build_query($query_params);
 
-            <h3>Mis Categorías</h3>
-            <ul class="lista-categorias">
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-                <?php
-                $stmt = $db->prepare("SELECT Categorias.ID_categoria, Categorias.nombre AS categoria_nombre, Cuentas_de_banco.banco, Cuentas_de_banco.tipo, Cuentas_de_banco.nombre AS cuenta_nombre 
-                                    FROM Categorias
-                                    INNER JOIN Cuentas_de_banco ON Categorias.ID_usuario = Cuentas_de_banco.ID_usuario
-                                    WHERE Cuentas_de_banco.ID_usuario = ? ");
-                if (!$stmt) {
-                    error_log("Error al preparar la consulta: " . $db->error);
-                    echo "<p>Ocurrió un error al cargar tus categorías. Por favor, inténtalo de nuevo más tarde.</p>";
-                    exit();
-                }
+                    if ($pagina_actual > 1):
+                    ?>
+                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                    <?php endif; ?>
 
-                $stmt->bind_param('i', $_SESSION['user_id']);
-                if (!$stmt->execute()) {
-                    error_log("Error al ejecutar la consulta: " . $stmt->error);
-                    echo "<p>Ocurrió un error al cargar tus categorías. Por favor, inténtalo de nuevo más tarde.</p>";
-                    exit();
-                }
+                    <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
-                $result = $stmt->get_result();
+                    <?php if ($pagina_actual < $total_paginas): ?>
+                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                    <?php endif; ?>
+                </div>
 
-                while ($row = $result->fetch_assoc()) {
-                    echo "<li>" . htmlspecialchars($row['nombre_cuenta']) . ": " . htmlspecialchars($row['nombre_banco']) . "(" . htmlspecialchars($row['tipo_cuenta']) . ") - Categoría: " . htmlspecialchars($row['nombre']) . "
-                            <div class='btn-group'>
-                                <a href='gestionar_transaccion.php?id_categoria=" . htmlspecialchars($row['ID_categoria'], ENT_QUOTES, 'UTF-8') . "'>
-                                    <button class='btn-categorias'>Gestionar</button>
-                                </a>
-                            </div>
-                        </li>";     
-                }
-                $stmt->close();
-                ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-            </ul>
+            <?php else: ?>
+                <p>No hay transacciones registradas.</p>
+            <?php endif; ?>
+
         </div>
     </main>
 
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
-    
+
     <script src="js/menu_lateral.js"></script>
+    
 </body>
 </html>
