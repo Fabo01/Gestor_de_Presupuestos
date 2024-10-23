@@ -97,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Editar Artículo</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/articulos.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/articulos.css">
 </head>
 <body>
     <header class="navbar">
@@ -164,6 +164,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </footer>
 
 
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>

@@ -92,7 +92,7 @@ $csrf_token = $_SESSION['csrf_token'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($articulo['titulo']); ?></title>
-    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header class="navbar">
@@ -194,6 +194,6 @@ $csrf_token = $_SESSION['csrf_token'];
     <p>&copy; 2024 Foro de Artículos Informativos. Todos los derechos reservados.</p>
 </footer>
 
-<script src="JS/menu_lateral.js"></script>
+<script src="js/menu_lateral.js"></script>
 </body>
 </html>

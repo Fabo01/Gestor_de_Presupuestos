@@ -101,8 +101,8 @@ $stmt_categorias->close();
 <head>
     <meta charset="UTF-8">
     <title>Crear Transacción</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/stylesss.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/stylesss.css">
 </head>
 <body>
 

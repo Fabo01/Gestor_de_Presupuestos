@@ -93,8 +93,8 @@ if (!$stmt_total) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Artículos</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/articulos.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/articulos.css">
 </head>
 <body>
 <header class="navbar">
@@ -215,6 +215,6 @@ if (!$stmt_total) {
         <p>&copy; 2024 Foro de Artículos Informativos. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>

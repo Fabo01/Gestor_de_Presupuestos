@@ -133,8 +133,8 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>Resumen Financiero - Gestor de Presupuestos</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/stylesss.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/stylesss.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -200,7 +200,7 @@ while ($row = $result->fetch_assoc()) {
     </footer>
 
     <!-- Scripts para generar los gráficos -->
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
     <script>
         // Gráfico de Ingresos y Gastos por Categoría
         const categoriaCtx = document.getElementById('categoriaChart').getContext('2d');

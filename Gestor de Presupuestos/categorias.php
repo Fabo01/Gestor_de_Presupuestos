@@ -139,8 +139,8 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Categorías</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/intro_datos.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/intro_datos.css">
 </head>
 <body>
 
@@ -291,6 +291,6 @@ $result = $stmt->get_result();
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="JS/menu_lateral.js"></script>
+    <script src="js/menu_lateral.js"></script>
 </body>
 </html>
