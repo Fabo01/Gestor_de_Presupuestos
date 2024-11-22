@@ -21,22 +21,28 @@ if (empty($_SESSION['token'])) {
 }
 $token = $_SESSION['token'];
 
+/* ==========================================================
+   PROCESAR FORMULARIOS
+========================================================== */
+
+// Procesar formulario de creación o edición de banco
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar el token CSRF
+    // Verificar token CSRF
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
     } else {
-        // Capturar los datos del formulario
-        $nombre_banco = ($_POST['banco_select'] === 'otro') ? trim($_POST['nombre_banco']) : trim($_POST['banco_select']);
+        // Lógica para crear o editar una cuenta bancaria
+        $nombre_banco = trim($_POST['nombre_banco']);
         $tipo_cuenta = trim($_POST['tipo_cuenta']);
         $nombre_cuenta = trim($_POST['nombre_cuenta']);
+        $id_banco = isset($_POST['id_banco']) ? intval($_POST['id_banco']) : 0;
 
         if (empty($nombre_banco) || empty($tipo_cuenta) || empty($nombre_cuenta)) {
             $error = "Por favor, completa todos los campos.";
         } else {
-            // Verificar si ya existe una cuenta bancaria con los mismos detalles
-            $stmt_check = $db->prepare("SELECT COUNT(*) FROM Cuentas_de_banco WHERE banco = ? AND tipo = ? AND nombre = ? AND ID_usuario = ?");
-            $stmt_check->bind_param('sssi', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $user_id);
+            // Validación adicional: verificar duplicados
+            $stmt_check = $db->prepare("SELECT COUNT(*) FROM Cuentas_de_banco WHERE banco = ? AND tipo = ? AND nombre = ? AND ID_usuario = ? AND ID_banco != ?");
+            $stmt_check->bind_param('sssii', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $user_id, $id_banco);
             $stmt_check->execute();
             $stmt_check->bind_result($count);
             $stmt_check->fetch();
@@ -45,13 +51,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($count > 0) {
                 $error = "Ya tienes una cuenta bancaria con esos detalles.";
             } else {
-                // Insertar la nueva cuenta bancaria
-                $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (banco, tipo, nombre, ID_usuario) VALUES (?, ?, ?, ?)");
-                $stmt->bind_param('sssi', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $user_id);
-                $stmt->execute();
-                $stmt->close();
-
-                $mensaje = "Banco agregado correctamente.";
+                if ($id_banco > 0) {
+                    // Actualizar banco existente
+                    $stmt = $db->prepare("UPDATE Cuentas_de_banco SET banco = ?, tipo = ?, nombre = ? WHERE ID_banco = ? AND ID_usuario = ?");
+                    $stmt->bind_param('sssii', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $id_banco, $user_id);
+                    if ($stmt->execute()) {
+                        $mensaje = "Cuenta bancaria actualizada exitosamente.";
+                    } else {
+                        $error = "Error al actualizar la cuenta bancaria.";
+                    }
+                    $stmt->close();
+                } else {
+                    // Insertar nueva cuenta bancaria
+                    $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (banco, tipo, nombre, ID_usuario) VALUES (?, ?, ?, ?)");
+                    $stmt->bind_param('sssi', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $user_id);
+                    if ($stmt->execute()) {
+                        $mensaje = "Cuenta bancaria creada exitosamente.";
+                    } else {
+                        $error = "Error al crear la cuenta bancaria.";
+                    }
+                    $stmt->close();
+                }
             }
         }
     }
@@ -70,6 +90,10 @@ if (isset($_GET['eliminar'])) {
     }
     $stmt_delete->close();
 }
+
+/* ==========================================================
+   OBTENER DATOS PARA EL FILTRO Y LA LISTA
+========================================================== */
 
 // Parámetros de búsqueda y paginación
 $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
@@ -127,21 +151,19 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Gestión de Bancos</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/intro_datos.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
+    <!-- HEADER -->
     <header class="navbar">
-    <?php if (isset($_SESSION['user_id'])): ?>
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <?php endif; ?>
-        <div class="logo">Gestor de Presupuestos</div>
+    <button id="menu-btn" class="menu-btn">&#9776;</button>
+        <div class="logo">
+            Gestor de Presupuestos
+        </div>
         <nav class="nav">
             <ul>
-                <!-- Verificamos si el usuario ha iniciado sesión -->
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>
+                <li>
                     <a href="informacion.php">
                         <button class="btn btn-boletines">Ayuda</button>
                     </a>
@@ -152,24 +174,15 @@ $result = $stmt->get_result();
                         <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                     </div>
                 </li>
-                <li>
-                    <a href="perfil.php">
-                        <button class="btn btn-perfil">Perfil</button>
-                    </a>
-                </li>
-                <li> 
-                    <a href="logout.php">
-                        <button class="btn btn-logout">Cerrar Sesión</button>
-                    </a></li>
-                <?php else: ?>
-                    <li><a href="index.php">Iniciar Sesión</a></li>
-                <?php endif; ?>
+                <li><a href="perfil.php">Perfil</a></li>
+                <li><a href="logout.php">Cerrar Sesión</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="sidebar">
-        <button id="close-btn" class="close-btn">&times;</button>
+    <button id="close-btn" class="close-btn">&times;</button>
 
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
@@ -181,11 +194,10 @@ $result = $stmt->get_result();
         </ul>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main>
 
-        <h3><?php echo isset($_GET['editar']) ? 'Editar Cuenta Bancaria' : 'Añadir una nueva cuenta bancaria'; ?></h3>
-
-        <!-- Mostrar mensajes de éxito o error -->
+        <!-- MENSAJES DE ÉXITO O ERROR -->
         <?php if (!empty($mensaje)): ?>
             <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
         <?php endif; ?>
@@ -194,110 +206,116 @@ $result = $stmt->get_result();
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
-        <?php
-        // Si se está editando una cuenta bancaria, obtener sus datos
-        $editar_nombre_banco = '';
-        $editar_tipo_cuenta = '';
-        $editar_nombre_cuenta = '';
-        $id_banco_editar = 0;
+        <!-- FORMULARIO PARA AÑADIR O EDITAR CUENTA BANCARIA -->
+        <section class="form-section">
+            <h3><?php echo isset($_GET['editar']) ? 'Editar Cuenta Bancaria' : 'Añadir una nueva cuenta bancaria'; ?></h3>
 
-        if (isset($_GET['editar'])) {
-            $id_banco_editar = intval($_GET['editar']);
-            $stmt_editar = $db->prepare("SELECT banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_banco = ? AND ID_usuario = ?");
-            $stmt_editar->bind_param('ii', $id_banco_editar, $user_id);
-            $stmt_editar->execute();
-            $stmt_editar->bind_result($editar_nombre_banco, $editar_tipo_cuenta, $editar_nombre_cuenta);
-            $stmt_editar->fetch();
-            $stmt_editar->close();
-        }
-        ?>
+            <?php
+            // Si se está editando una cuenta bancaria, obtener sus datos
+            $editar_nombre_banco = '';
+            $editar_tipo_cuenta = '';
+            $editar_nombre_cuenta = '';
+            $id_banco_editar = 0;
 
-        <form action="bancos.php" method="POST">
-            <!-- Selector de banco o ingresar otro banco -->
-            <label for="banco"><br>Selecciona tu banco:</label>
-            <select id="banco_select" name="banco_select" onchange="toggleBancoInput(this.value)">
-                <option value="Banco de Chile" <?php echo ($editar_nombre_banco == 'Banco de Chile') ? 'selected' : ''; ?>>Banco de Chile</option>
-                <option value="Estado" <?php echo ($editar_nombre_banco == 'Banco Estado') ? 'selected' : ''; ?>>Banco Estado</option>
-                <option value="Santander" <?php echo ($editar_nombre_banco == 'Banco Santander') ? 'selected' : ''; ?>>Banco Santander</option>
-                <option value="BCI" <?php echo ($editar_nombre_banco == 'Banco BCI') ? 'selected' : ''; ?>>Banco BCI</option>
-                <option value="otro">Otro (Escribe el nombre del banco)</option>
-            </select>
+            if (isset($_GET['editar'])) {
+                $id_banco_editar = intval($_GET['editar']);
+                $stmt_editar = $db->prepare("SELECT banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_banco = ? AND ID_usuario = ?");
+                $stmt_editar->bind_param('ii', $id_banco_editar, $user_id);
+                $stmt_editar->execute();
+                $stmt_editar->bind_result($editar_nombre_banco, $editar_tipo_cuenta, $editar_nombre_cuenta);
+                $stmt_editar->fetch();
+                $stmt_editar->close();
+            }
+            ?>
 
-            <!-- Input de nombre del banco solo si selecciona 'Otro' -->
-            <label for="nombre_banco"><br>Escribe el nombre del banco:</label>
-            <input type="text" id="nombre_banco" name="nombre_banco" placeholder="Escribe el nombre del banco"
-                value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" 
-                <?php echo ($editar_nombre_banco != '' && !in_array($editar_nombre_banco, ['Banco de Chile', 'Banco Estado', 'Banco Santander', 'Banco BCI'])) ? '' : 'disabled'; ?> required>
+            <form action="bancos.php" method="POST" class="form-style">
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                <input type="hidden" name="id_banco" value="<?php echo $id_banco_editar; ?>">
 
-            <!-- Tipo de cuenta -->
-            <label for="tipo_cuenta"><br>Selecciona el tipo de cuenta:</label>
-            <select id="tipo_cuenta" name="tipo_cuenta">
-                <option value="Cuenta Vista">Cuenta Vista</option>
-                <option value="Cuenta RUT">Cuenta RUT</option>
-                <option value="Cuenta de Ahorro">Cuenta de Ahorro</option>
-                <option value="Cuenta Corriente">Cuenta Corriente</option>
-            </select>
+                <div class="form-group">
+                    <label for="nombre_banco">Nombre del Banco:</label>
+                    <input type="text" name="nombre_banco" placeholder="Escribe el nombre del banco" value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" required>
+                </div>
 
-            <!-- Input para el nombre de la cuenta (por ejemplo, "Aquí guardo ahorros") -->
-            <label for="nombre_cuenta"><br>Nombre de la cuenta:</label>
-            <input type="text" id="nombre_cuenta" name="nombre_cuenta" placeholder="Escribe el nombre de la cuenta" 
-                value="<?php echo isset($editar_nombre_cuenta) ? htmlspecialchars($editar_nombre_cuenta) : ''; ?>" required>
+                <div class="form-group">
+                    <label for="tipo_cuenta">Tipo de Cuenta:</label>
+                    <input type="text" name="tipo_cuenta" placeholder="Ejemplo: Ahorros, Corriente" value="<?php echo htmlspecialchars($editar_tipo_cuenta); ?>" required>
+                </div>
 
-            <!-- Token CSRF para seguridad -->
-            <input type="hidden" name="token" value="<?php echo $token; ?>">
+                <div class="form-group">
+                    <label for="nombre_cuenta">Nombre de la Cuenta:</label>
+                    <input type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
+                </div>
 
-            <button type="submit">Guardar</button>
-        </form>
+                <div class="button-group">
+                    <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
+                </div>
+            </form>
+        </section>
 
+        <!-- FILTRO DE BÚSQUEDA -->
+        <section class="filter-section">
+            <h3>Buscar Cuentas Bancarias</h3>
+            <form method="GET" action="bancos.php" class="search-form">
+                <input type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
+                <button type="submit">Buscar</button>
+            </form>
+        </section>
 
-        <div class="container-gestion">
+        <!-- LISTA DE CUENTAS BANCARIAS -->
+        <section class="list-section">
             <h3>Mis Cuentas Bancarias</h3>
-            <table>
-                <tr>
-                    <th>Banco</th>
-                    <th>Tipo</th>
-                    <th>Nombre de la Cuenta</th>
-                    <th>Acciones</th>
-                </tr>
-                <?php while ($row = $result->fetch_assoc()): ?>
+            <?php if ($result->num_rows > 0): ?>
+                <table>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['banco']); ?></td>
-                        <td><?php echo htmlspecialchars($row['tipo']); ?></td>
-                        <td><?php echo htmlspecialchars($row['nombre']); ?></td>
-                        <td>
-                            <a href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
-                            <a href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
-                        </td>
+                        <th>Banco</th>
+                        <th>Tipo</th>
+                        <th>Nombre de la Cuenta</th>
+                        <th>Acciones</th>
                     </tr>
-                <?php endwhile; ?>
-            </table>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['banco']); ?></td>
+                            <td><?php echo htmlspecialchars($row['tipo']); ?></td>
+                            <td><?php echo htmlspecialchars($row['nombre']); ?></td>
+                            <td>
+                                <a href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
+                                <a href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </table>
 
-            <!-- Paginación -->
-            <div class="pagination">
-                <?php
-                $query_params = $_GET;
-                unset($query_params['pagina']);
-                $base_url = '?' . http_build_query($query_params);
+                <!-- Paginación -->
+                <div class="pagination">
+                    <?php
+                    $query_params = $_GET;
+                    unset($query_params['pagina']);
+                    $base_url = '?' . http_build_query($query_params);
 
-                if ($pagina_actual > 1):
-                ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
-                <?php endif; ?>
+                    if ($pagina_actual > 1):
+                    ?>
+                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                    <?php endif; ?>
 
-                <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
+                    <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
-                <?php if ($pagina_actual < $total_paginas): ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
-                <?php endif; ?>
-            </div>
-        </div>
+                    <?php if ($pagina_actual < $total_paginas): ?>
+                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <p>No se encontraron cuentas bancarias.</p>
+            <?php endif; ?>
+        </section>
 
     </main>
 
+    <!-- FOOTER -->
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="js/menu_lateral.js"></script>
+    <script src="JS/menu_lateral.js"></script>
 </body>
 </html>

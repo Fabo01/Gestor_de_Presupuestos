@@ -1,7 +1,7 @@
 <?php
 require 'Conex.inc';
 
-// Mover session_set_cookie_params antes de session_start si es necesario
+// Configurar las cookies de sesión de manera segura antes de iniciar la sesión
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $confirm_password = $_POST['confirm_password'];
         $nombre = trim($_POST['name']);
         $apellido = trim($_POST['lastname']);
-        $nacionalidad = trim($_POST['nacionalidad']);
+        $nacionalidad = $_POST['nacionalidad'];
         $nacimiento = $_POST['fechanac'];
 
         // Validación de entradas
@@ -57,45 +57,123 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (strlen($password) < 8) {
             $error = "La contraseña debe tener al menos 8 caracteres.";
         } else {
-            // Verificar si el correo electrónico o nombre de usuario ya existen
-            $stmt = $db->prepare("SELECT COUNT(*) FROM Usuarios WHERE email = ? OR usuario = ?");
-            $stmt->bind_param('ss', $email, $usuario);
-            $stmt->execute();
-            $stmt->bind_result($count);
-            $stmt->fetch();
-            $stmt->close();
+            // Verificar si el usuario es mayor de 18 años
+            $fecha_nacimiento = new DateTime($nacimiento);
+            $hoy = new DateTime();
+            $edad = $hoy->diff($fecha_nacimiento)->y;
 
-            if ($count > 0) {
-                $error = "El correo electrónico o nombre de usuario ya están en uso.";
+            if ($edad < 18) {
+                $error = "Debes tener al menos 18 años para registrarte.";
             } else {
-                // Encriptar la contraseña de forma segura
-                $options = ['cost' => 12];
-                $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options);
-
-                // Insertar el nuevo usuario en la base de datos
-                $stmt = $db->prepare("INSERT INTO Usuarios (usuario, email, password, nombre, apellido, nacionalidad, nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param('sssssss', $usuario, $email, $hashed_password, $nombre, $apellido, $nacionalidad, $nacimiento);
-
-                if ($stmt->execute()) {
-                    header('Location: index.php?registro=exitoso');
-                    exit();
+                // Verificar si el correo electrónico ya existe
+                $stmt = $db->prepare("SELECT 1 FROM Usuarios WHERE email = ? LIMIT 1");
+                if (!$stmt) {
+                    $error = "Error en la base de datos. Por favor, inténtalo más tarde.";
                 } else {
-                    $error = "Error al registrar el usuario.";
+                    $stmt->bind_param('s', $email);
+                    $stmt->execute();
+                    $stmt->store_result();
+                    if ($stmt->num_rows > 0) {
+                        $error = "El correo electrónico ya está en uso.";
+                    }
+                    $stmt->close();
                 }
-                $stmt->close();
+
+                // Verificar si el nombre de usuario ya existe
+                if (empty($error)) {
+                    $stmt = $db->prepare("SELECT 1 FROM Usuarios WHERE usuario = ? LIMIT 1");
+                    if (!$stmt) {
+                        $error = "Error en la base de datos. Por favor, inténtalo más tarde.";
+                    } else {
+                        $stmt->bind_param('s', $usuario);
+                        $stmt->execute();
+                        $stmt->store_result();
+                        if ($stmt->num_rows > 0) {
+                            $error = "El nombre de usuario ya está en uso.";
+                        }
+                        $stmt->close();
+                    }
+                }
+
+                if (empty($error)) {
+                    // Encriptar la contraseña de forma segura
+                    $options = ['cost' => 12];
+                    $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options);
+
+                    // Iniciar una transacción
+                    $db->begin_transaction();
+
+                    try {
+                        // Insertar el nuevo usuario en la base de datos
+                        $stmt = $db->prepare("INSERT INTO Usuarios (usuario, email, password, nombre, apellido, nacionalidad, nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        if (!$stmt) {
+                            throw new Exception("Error en la base de datos. Por favor, inténtalo más tarde.");
+                        }
+
+                        $stmt->bind_param('sssssss', $usuario, $email, $hashed_password, $nombre, $apellido, $nacionalidad, $nacimiento);
+
+                        if (!$stmt->execute()) {
+                            throw new Exception("Error al registrar el usuario. Por favor, inténtalo más tarde.");
+                        }
+
+                        // Obtener el ID del nuevo usuario
+                        $ID_usuario = $stmt->insert_id;
+                        $stmt->close();
+
+                        // Categorías predeterminadas
+                        $categorias_predeterminadas = [
+                            ['nombre' => 'Salario', 'tipo' => 'ingreso'],
+                            ['nombre' => 'Venta', 'tipo' => 'ingreso'],
+                            ['nombre' => 'Regalo', 'tipo' => 'ingreso'],
+                            ['nombre' => 'Alquiler', 'tipo' => 'gasto'],
+                            ['nombre' => 'Comida', 'tipo' => 'gasto'],
+                            ['nombre' => 'Transporte', 'tipo' => 'gasto'],
+                            ['nombre' => 'Entretenimiento', 'tipo' => 'gasto'],
+                            ['nombre' => 'Salud', 'tipo' => 'gasto'],
+                            ['nombre' => 'Educación', 'tipo' => 'gasto'],
+                            ['nombre' => 'Servicios', 'tipo' => 'gasto'],
+                            ['nombre' => 'Otros', 'tipo' => 'gasto'],
+                            ['nombre' => 'Acciones', 'tipo' => 'ingreso'],
+                        ];
+
+                        // Insertar las categorías predeterminadas
+                        $stmt = $db->prepare("INSERT INTO Categorias (ID_usuario, nombre, tipo) VALUES (?, ?, ?)");
+                        if (!$stmt) {
+                            throw new Exception("Error al crear categorías predeterminadas. Por favor, inténtalo más tarde.");
+                        }
+
+                        foreach ($categorias_predeterminadas as $categoria) {
+                            $stmt->bind_param('iss', $ID_usuario, $categoria['nombre'], $categoria['tipo']);
+                            if (!$stmt->execute()) {
+                                throw new Exception("Error al crear categorías predeterminadas. Por favor, inténtalo más tarde.");
+                            }
+                        }
+
+                        $stmt->close();
+
+                        // Confirmar la transacción
+                        $db->commit();
+
+                        header('Location: index.php?registro=exitoso');
+                        exit();
+
+                    } catch (Exception $e) {
+                        // Revertir la transacción en caso de error
+                        $db->rollback();
+                        $error = $e->getMessage();
+                    }
+                }
             }
         }
     }
 }
 ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Registro de Usuario</title>
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="CSS/login.css">
 </head>
 <body class="login-page">
     <div class="aspect-ratio-container">
@@ -104,17 +182,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h1 class="main-header">Crear Cuenta</h1>
             </header>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
             <?php if (!empty($mensaje)): ?>
                 <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
             <?php endif; ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
             <?php if (!empty($error)): ?>
                 <div class="error"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
             <main>
                 <form action="register.php" method="POST" class="form-style">
@@ -145,11 +219,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="form-group">
                         <label for="nacionalidad">Nacionalidad:</label>
-                        <input type="text" name="nacionalidad" placeholder="Nacionalidad" value="<?php echo htmlspecialchars($nacionalidad); ?>" required><br>
+                        <select name="nacionalidad" required>
+                            <option value="">Seleccione su país</option>
+                            <option value="Argentina" <?php if ($nacionalidad == 'Argentina') echo 'selected'; ?>>Argentina</option>
+                            <option value="Bolivia" <?php if ($nacionalidad == 'Bolivia') echo 'selected'; ?>>Bolivia</option>
+                            <option value="Chile" <?php if ($nacionalidad == 'Chile') echo 'selected'; ?>>Chile</option>
+                            <option value="Colombia" <?php if ($nacionalidad == 'Colombia') echo 'selected'; ?>>Colombia</option>
+                            <option value="Costa Rica" <?php if ($nacionalidad == 'Costa Rica') echo 'selected'; ?>>Costa Rica</option>
+                            <option value="Cuba" <?php if ($nacionalidad == 'Cuba') echo 'selected'; ?>>Cuba</option>
+                            <option value="Ecuador" <?php if ($nacionalidad == 'Ecuador') echo 'selected'; ?>>Ecuador</option>
+                            <option value="El Salvador" <?php if ($nacionalidad == 'El Salvador') echo 'selected'; ?>>El Salvador</option>
+                            <option value="España" <?php if ($nacionalidad == 'España') echo 'selected'; ?>>España</option>
+                            <option value="Guatemala" <?php if ($nacionalidad == 'Guatemala') echo 'selected'; ?>>Guatemala</option>
+                            <option value="Honduras" <?php if ($nacionalidad == 'Honduras') echo 'selected'; ?>>Honduras</option>
+                            <option value="México" <?php if ($nacionalidad == 'México') echo 'selected'; ?>>México</option>
+                            <option value="Nicaragua" <?php if ($nacionalidad == 'Nicaragua') echo 'selected'; ?>>Nicaragua</option>
+                            <option value="Panamá" <?php if ($nacionalidad == 'Panamá') echo 'selected'; ?>>Panamá</option>
+                            <option value="Paraguay" <?php if ($nacionalidad == 'Paraguay') echo 'selected'; ?>>Paraguay</option>
+                            <option value="Perú" <?php if ($nacionalidad == 'Perú') echo 'selected'; ?>>Perú</option>
+                            <option value="Puerto Rico" <?php if ($nacionalidad == 'Puerto Rico') echo 'selected'; ?>>Puerto Rico</option>
+                            <option value="República Dominicana" <?php if ($nacionalidad == 'República Dominicana') echo 'selected'; ?>>República Dominicana</option>
+                            <option value="Uruguay" <?php if ($nacionalidad == 'Uruguay') echo 'selected'; ?>>Uruguay</option>
+                            <option value="Venezuela" <?php if ($nacionalidad == 'Venezuela') echo 'selected'; ?>>Venezuela</option>
+                        </select><br>
                     </div>
                     <div class="form-group">
                         <label for="fechanac">Fecha de Nacimiento:</label>
-                        <input type="date" name="fechanac" placeholder="Fecha de Nacimiento" value="<?php echo htmlspecialchars($nacimiento); ?>" required><br>
+                        <input type="date" name="fechanac" value="<?php echo htmlspecialchars($nacimiento); ?>" required><br>
                     </div>
                     <div class="button-group">
                         <button type="submit">Registrarse</button>

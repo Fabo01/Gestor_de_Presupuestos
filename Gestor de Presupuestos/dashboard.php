@@ -94,27 +94,29 @@ $bancos_stmt = $db->prepare("SELECT ID_banco, banco FROM Cuentas_de_banco WHERE 
 $bancos_stmt->bind_param('i', $user_id);
 $bancos_stmt->execute();
 $bancos_result = $bancos_stmt->get_result();
+
+// Verificar si el usuario tiene bancos vinculados
+$has_banks = $bancos_result->num_rows > 0;
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Gestor de Presupuestos</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/styless.css">
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/styless.css">
 </head>
 <body>
 
     <header class="navbar">
-    <?php if (isset($_SESSION['user_id'])): ?>
         <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <?php endif; ?>
-        <div class="logo">Gestor de Presupuestos</div>
+        <div class="logo">
+            Gestor de Presupuestos
+        </div>
         <nav class="nav">
             <ul>
-                <!-- Verificamos si el usuario ha iniciado sesión -->
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <li>
+                <li>
                     <a href="informacion.php">
                         <button class="btn btn-boletines">Ayuda</button>
                     </a>
@@ -125,21 +127,12 @@ $bancos_result = $bancos_stmt->get_result();
                         <span>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
                     </div>
                 </li>
-                <li>
-                    <a href="perfil.php">
-                        <button class="btn btn-perfil">Perfil</button>
-                    </a>
-                </li>
-                <li> 
-                    <a href="logout.php">
-                        <button class="btn btn-logout">Cerrar Sesión</button>
-                    </a></li>
-                <?php else: ?>
-                    <li><a href="index.php">Iniciar Sesión</a></li>
-                <?php endif; ?>
+                <li><a href="perfil.php">Perfil</a></li>
+                <li><a href="logout.php">Cerrar Sesión</a></li>
             </ul>
         </nav>
     </header>
+
     <aside id="sidebar" class="sidebar">
         <button id="close-btn" class="close-btn">&times;</button>
 
@@ -154,7 +147,7 @@ $bancos_result = $bancos_stmt->get_result();
     </aside>
 
     <main>
-        <h2>Bienvenido, <?php echo htmlspecialchars($usuario); ?></h2>
+        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?></h2>
         <div class="container-gestion">
 
             <h3>Resumen de Transacciones</h3>
@@ -174,7 +167,10 @@ $bancos_result = $bancos_stmt->get_result();
                 <label for="banco">Banco:</label>
                 <select name="banco" id="banco">
                     <option value="">Todos</option>
-                    <?php while ($ban = $bancos_result->fetch_assoc()): ?>
+                    <?php 
+                    // Reiniciar el puntero del resultado de bancos
+                    $bancos_result->data_seek(0);
+                    while ($ban = $bancos_result->fetch_assoc()): ?>
                         <option value="<?php echo $ban['ID_banco']; ?>" <?php if ($banco == $ban['ID_banco']) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($ban['banco']); ?>
                         </option>
@@ -190,11 +186,21 @@ $bancos_result = $bancos_stmt->get_result();
                 <button type="submit">Filtrar</button>
             </form>
 
-            <div class="btn-banco-container">
-                <a href="transacciones.php">
-                    <button class="btn btn-banco">Añadir Transacción</button>
-                </a>
-            </div> 
+            <?php if ($has_banks): ?>
+                <div class="btn-banco-container">
+                    <a href="transacciones.php">
+                        <button class="btn btn-banco">Añadir Transacción</button>
+                    </a>
+                </div>
+            <?php else: ?>
+                <!-- Mostrar el botón cuando no tiene bancos vinculados -->
+                <div class="btn-banco-container">
+                    <p>No tienes cuentas bancarias vinculadas. Para comenzar a registrar tus transacciones, por favor añade una cuenta bancaria.</p>
+                    <a href="bancos.php">
+                        <button class="btn btn-banco">Añadir Cuenta Bancaria</button>
+                    </a>
+                </div>
+            <?php endif; ?>
 
             <?php if ($result->num_rows > 0): ?>
                 <table>
@@ -253,7 +259,7 @@ $bancos_result = $bancos_stmt->get_result();
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="js/menu_lateral.js"></script>
+    <script src="JS/menu_lateral.js"></script>
     
 </body>
 </html>
