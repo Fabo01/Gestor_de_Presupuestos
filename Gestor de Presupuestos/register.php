@@ -31,6 +31,41 @@ $apellido = '';
 $nacionalidad = '';
 $nacimiento = '';
 
+// Función para agregar categorías y cuentas predeterminadas
+function agregarCategoriasYCuentaPredeterminadas($user_id, $db) {
+    // Categorías predeterminadas
+    $categorias = [
+        ['nombre' => 'Salario', 'tipo' => 'ingreso'],
+        ['nombre' => 'Venta', 'tipo' => 'ingreso'],
+        ['nombre' => 'Regalo', 'tipo' => 'ingreso'],
+        ['nombre' => 'Alquiler', 'tipo' => 'gasto'],
+        ['nombre' => 'Comida', 'tipo' => 'gasto'],
+        ['nombre' => 'Transporte', 'tipo' => 'gasto'],
+        ['nombre' => 'Entretenimiento', 'tipo' => 'gasto'],
+        ['nombre' => 'Salud', 'tipo' => 'gasto'],
+        ['nombre' => 'Educación', 'tipo' => 'gasto'],
+        ['nombre' => 'Servicios', 'tipo' => 'gasto'],
+        ['nombre' => 'Otros', 'tipo' => 'gasto']
+    ];
+
+    // Insertar categorías predeterminadas
+    $stmt = $db->prepare("INSERT INTO Categorias (nombre, tipo, ID_usuario) VALUES (?, ?, ?)");
+    foreach ($categorias as $categoria) {
+        $stmt->bind_param('ssi', $categoria['nombre'], $categoria['tipo'], $user_id);
+        $stmt->execute();
+    }
+    $stmt->close();
+
+    // Cuenta predeterminada
+    $nombre_banco = 'Banco Predeterminado';
+    $tipo_cuenta = 'Corriente';
+    $nombre_cuenta = 'Cuenta Predeterminada';
+    $stmt = $db->prepare("INSERT INTO Cuentas_de_banco (banco, tipo, nombre, ID_usuario) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('sssi', $nombre_banco, $tipo_cuenta, $nombre_cuenta, $user_id);
+    $stmt->execute();
+    $stmt->close();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
@@ -77,6 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->bind_param('sssssss', $usuario, $email, $hashed_password, $nombre, $apellido, $nacionalidad, $nacimiento);
 
                 if ($stmt->execute()) {
+                    // Obtener el ID del nuevo usuario
+                    $user_id = $stmt->insert_id;
+                    // Llamar a la función para agregar categorías y cuentas predeterminadas
+                    agregarCategoriasYCuentaPredeterminadas($user_id, $db);
                     header('Location: index.php?registro=exitoso');
                     exit();
                 } else {
