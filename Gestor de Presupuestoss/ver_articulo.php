@@ -128,7 +128,6 @@ $csrf_token = $_SESSION['csrf_token'];
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 

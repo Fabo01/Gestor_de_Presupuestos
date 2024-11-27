@@ -117,11 +117,11 @@ if (isset($error_message)) {
                     </div>
                     <div class="detalles-perfil">
                         <h4>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></h4>
-                        <p>Nombre:</p>
-                        <p>Apellido:</p>
-                        <p>Email:</p>
-                        <p>Nacionalidad:</p>
-                        <p>Fecha de Nacimiento:</p>
+                        <p>Nombre: <?php echo $nombre; ?></p>
+                        <p>Apellido: <?php echo $apellido; ?></p>
+                        <p>Email: <?php echo $email; ?></p>
+                        <p>Nacionalidad: <?php echo $nacionalidad; ?></p>
+                        <p>Fecha de Nacimiento: <?php echo $nacimiento; ?></p>
                     </div>
                 </div>
 

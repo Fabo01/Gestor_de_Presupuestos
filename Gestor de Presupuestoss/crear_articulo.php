@@ -106,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="dashboard.php">Inicio</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 

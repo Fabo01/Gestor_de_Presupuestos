@@ -17,24 +17,39 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
-if (!$user_id) {
+$ID_usuario = filter_var($_SESSION['user_id'], FILTER_VALIDATE_INT);
+if (!$ID_usuario) {
     session_destroy();
     header('Location: index.php');
     exit();
 }
 
+$mensaje = '';
+if (isset($_GET['mensaje'])) {
+    switch ($_GET['mensaje']) {
+        case 'creado':
+            $mensaje = 'Artículo creado exitosamente.';
+            break;
+        case 'actualizado':
+            $mensaje = 'Artículo actualizado exitosamente.';
+            break;
+        case 'eliminado':
+            $mensaje = 'Artículo eliminado exitosamente.';
+            break;
+    }
+}
+
 $articulos_por_pagina = 5;
 
-// Obtener el número total de artículos
-$stmt_total = $db->prepare("SELECT COUNT(*) FROM Articulos");
+$stmt_total = $db->prepare("SELECT COUNT(*) FROM Articulos WHERE ID_usuario = ?");
 if (!$stmt_total) {
     error_log("Error al preparar la consulta: " . $db->error);
-    $error_message = "Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.";
+    $error_message = "Ocurrió un error al cargar tus artículos. Por favor, inténtalo de nuevo más tarde.";
 } else {
+    $stmt_total->bind_param('i', $ID_usuario);
     if (!$stmt_total->execute()) {
         error_log("Error al ejecutar la consulta: " . $stmt_total->error);
-        $error_message = "Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.";
+        $error_message = "Ocurrió un error al cargar tus artículos. Por favor, inténtalo de nuevo más tarde.";
     } else {
         $stmt_total->bind_result($total_articulos);
         $stmt_total->fetch();
@@ -49,20 +64,20 @@ if (!$stmt_total) {
         $offset = ($pagina_actual - 1) * $articulos_por_pagina;
 
         $stmt = $db->prepare("
-            SELECT A.ID_articulo, A.titulo, A.contenido, A.fecha_creacion, U.usuario
-            FROM Articulos A
-            INNER JOIN Usuarios U ON A.ID_usuario = U.ID_usuario
-            ORDER BY A.fecha_creacion DESC
+            SELECT ID_articulo, titulo, contenido, fecha_creacion
+            FROM Articulos
+            WHERE ID_usuario = ?
+            ORDER BY fecha_creacion DESC
             LIMIT ?, ?
         ");
         if (!$stmt) {
             error_log("Error al preparar la consulta: " . $db->error);
-            $error_message = "Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.";
+            $error_message = "Ocurrió un error al cargar tus artículos. Por favor, inténtalo de nuevo más tarde.";
         } else {
-            $stmt->bind_param('ii', $offset, $articulos_por_pagina);
+            $stmt->bind_param('iii', $ID_usuario, $offset, $articulos_por_pagina);
             if (!$stmt->execute()) {
                 error_log("Error al ejecutar la consulta: " . $stmt->error);
-                $error_message = "Ocurrió un error al cargar los artículos. Por favor, inténtalo de nuevo más tarde.";
+                $error_message = "Ocurrió un error al cargar tus artículos. Por favor, inténtalo de nuevo más tarde.";
             } else {
                 $result = $stmt->get_result();
             }
@@ -70,11 +85,14 @@ if (!$stmt_total) {
     }
 }
 ?>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Foro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Artículos</title>
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="CSS/articulos.css">
 </head>
@@ -112,35 +130,44 @@ if (!$stmt_total) {
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
-    <nav class="nav-foro">
+<nav class="nav-foro">
         <ul>
             <li><a href="crear_articulo.php">Crear Artículo</a></li>
-            <li><a href="mis_articulos.php">Mis Artículos</a></li>
+            <li><a href="articulos.php">Volver a Artículos</a></li>
         </ul>
-    </nav>
+</nav>
 
     <main class="main-articulo">
-        <section id="articulos">
-            <h2>Artículos Recientes</h2>
+        <h2>Mis Artículos</h2>
 
-            <?php
-            if (isset($error_message)) {
-                echo "<p>$error_message</p>";
-            } else {
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <?php if ($mensaje): ?>
+            <p class="mensaje"><?php echo htmlspecialchars($mensaje); ?></p>
+        <?php endif; ?>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+        <?php
+        if (isset($error_message)) {
+            echo "<p>$error_message</p>";
+        } else {
+            if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    // Formatear la fecha
                     $fecha_formateada = date('d/m/Y H:i', strtotime($row['fecha_creacion']));
 
                     echo "<article>
                             <h3>" . htmlspecialchars($row['titulo']) . "</h3>
                             <p>" . nl2br(htmlspecialchars(substr($row['contenido'], 0, 200))) . "...</p>
-                            <small>Escrito por: " . htmlspecialchars($row['usuario']) . " el " . htmlspecialchars($fecha_formateada) . "</small>
+                            <small>Publicado el " . htmlspecialchars($fecha_formateada) . "</small>
                             <br>
                             <a href='ver_articulo.php?id_articulo=" . urlencode($row['ID_articulo']) . "'>Leer más</a>
+                            |
+                            <a href='editar_articulo.php?id_articulo=" . urlencode($row['ID_articulo']) . "'>Editar</a>
+                            |
+                            <a href='eliminar_articulo.php?id_articulo=" . urlencode($row['ID_articulo']) . "' onclick=\"return confirm('¿Estás seguro de que deseas eliminar este artículo?');\">Eliminar</a>
                         </article>
                         <hr>";
                 }
@@ -148,25 +175,30 @@ if (!$stmt_total) {
 
                 echo '<div class="paginacion">';
                 if ($pagina_actual > 1) {
-                    echo '<a href="articulos.php?pagina=' . ($pagina_actual - 1) . '">&laquo; Anterior</a>';
+                    echo '<a href="mis_articulos.php?pagina=' . ($pagina_actual - 1) . '">&laquo; Anterior</a>';
                 }
 
                 for ($i = 1; $i <= $total_paginas; $i++) {
                     if ($i == $pagina_actual) {
                         echo '<span class="pagina-actual">' . $i . '</span>';
                     } else {
-                        echo '<a href="articulos.php?pagina=' . $i . '">' . $i . '</a>';
+                        echo '<a href="mis_articulos.php?pagina=' . $i . '">' . $i . '</a>';
                     }
                 }
 
                 if ($pagina_actual < $total_paginas) {
-                    echo '<a href="articulos.php?pagina=' . ($pagina_actual + 1) . '">Siguiente &raquo;</a>';
+                    echo '<a href="mis_articulos.php?pagina=' . ($pagina_actual + 1) . '">Siguiente &raquo;</a>';
                 }
                 echo '</div>';
+            } else {
+                echo "<p>No has creado ningún artículo aún.</p>";
             }
-            ?>
-        </section>
+        }
+        ?>
+<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
     </main>
+
     <footer>
         <p>&copy; 2024 Foro de Artículos Informativos. Todos los derechos reservados.</p>
     </footer>

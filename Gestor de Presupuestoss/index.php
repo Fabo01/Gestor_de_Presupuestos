@@ -1,7 +1,7 @@
-<?php
+<?php 
 require 'Conex.inc';
 
-// Mover session_set_cookie_params antes de session_start
+// Configurar las cookies de sesión de manera segura antes de iniciar la sesión
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',
@@ -23,8 +23,8 @@ if (empty($_SESSION['token'])) {
 }
 $token = $_SESSION['token'];
 
+$login_input = '';
 $error = '';
-$email = '';
 
 // Habilitar la visualización de errores (solo en desarrollo)
 ini_set('display_errors', 1);
@@ -34,13 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
     } else {
-        $email = trim($_POST['email']);
+        $login_input = trim($_POST['login_input']);
         $password = $_POST['password'];
 
-        if (empty($email) || empty($password)) {
+        if (empty($login_input) || empty($password)) {
             $error = "Por favor, completa todos los campos.";
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = "El correo electrónico no es válido.";
         } else {
             $max_attempts = 5;
             $lockout_time = 15 * 60;
@@ -62,43 +60,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (empty($error)) {
-                // Actualizar la consulta SQL con los nuevos nombres de campos
-                $stmt = $db->prepare("SELECT ID_usuario, usuario, nombre, password FROM Usuarios WHERE email = ?");
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                $stmt->store_result();
+                // Buscar al usuario por correo electrónico o nombre de usuario
+                $stmt = $db->prepare("SELECT ID_usuario, usuario, nombre, password FROM Usuarios WHERE email = ? OR usuario = ?");
+                if (!$stmt) {
+                    $error = "Error en la base de datos. Por favor, inténtalo más tarde.";
+                } else {
+                    $stmt->bind_param('ss', $login_input, $login_input);
+                    $stmt->execute();
+                    $stmt->store_result();
 
-                if ($stmt->num_rows > 0) {
-                    // Actualizar los nombres de las variables para que coincidan con los campos
-                    $stmt->bind_result($ID_usuario, $usuario, $nombre, $hashed_password);
-                    $stmt->fetch();
+                    if ($stmt->num_rows > 0) {
+                        $stmt->bind_result($ID_usuario, $usuario, $nombre, $hashed_password);
+                        $stmt->fetch();
 
-                    if (password_verify($password, $hashed_password)) {
-                        session_regenerate_id(true);
-                        $_SESSION['user_id'] = $ID_usuario;
-                        $_SESSION['usuario'] = $usuario;
-                        $_SESSION['nombre'] = $nombre;
-                        $_SESSION['login_attempts'] = 0;
-                        header('Location: dashboard.php');
-                        exit();
+                        if (password_verify($password, $hashed_password)) {
+                            session_regenerate_id(true);
+                            $_SESSION['user_id'] = $ID_usuario;
+                            $_SESSION['usuario'] = $usuario;
+                            $_SESSION['nombre'] = $nombre;
+                            $_SESSION['login_attempts'] = 0;
+                            header('Location: dashboard.php');
+                            exit();
+                        } else {
+                            $error = "Nombre de usuario/correo electrónico o contraseña incorrectos.";
+                            $_SESSION['login_attempts'] += 1;
+                            $_SESSION['last_attempt_time'] = time();
+                        }
                     } else {
-                        $error = "Correo electrónico o contraseña incorrectos.";
+                        $error = "Nombre de usuario/correo electrónico o contraseña incorrectos.";
                         $_SESSION['login_attempts'] += 1;
                         $_SESSION['last_attempt_time'] = time();
                     }
-                } else {
-                    $error = "Correo electrónico o contraseña incorrectos.";
-                    $_SESSION['login_attempts'] += 1;
-                    $_SESSION['last_attempt_time'] = time();
+                    $stmt->close();
                 }
-                $stmt->close();
             }
         }
     }
 }
 ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -115,17 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </header>
             <main>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
                 <?php if (!empty($error)): ?>
                     <div class="error"><?php echo htmlspecialchars($error); ?></div>
                 <?php endif; ?>
-<!------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
                 <form action="index.php" method="POST" class="form-style">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                     <div class="form-group">
-                        <label for="email">Correo Electrónico:</label>
-                        <input type="email" name="email" placeholder="Correo electrónico" value="<?php echo htmlspecialchars($email); ?>" required><br>
+                        <label for="login_input">Correo o Usuario:</label>
+                        <input type="text" name="login_input" placeholder="Correo electrónico o nombre de usuario" value="<?php echo htmlspecialchars($login_input); ?>" required><br>
                     </div>
                     <div class="form-group">
                         <label for="password">Contraseña:</label>
