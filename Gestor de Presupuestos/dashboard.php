@@ -105,7 +105,6 @@ $has_banks = $bancos_result->num_rows > 0;
     <meta charset="UTF-8">
     <title>Dashboard - Gestor de Presupuestos</title>
     <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/styless.css">
 </head>
 <body>
 
@@ -142,7 +141,6 @@ $has_banks = $bancos_result->num_rows > 0;
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
@@ -155,7 +153,7 @@ $has_banks = $bancos_result->num_rows > 0;
             <!-- Formulario de Filtros -->
             <form method="GET" action="dashboard.php" class="filter-form">
                 <label for="categoria">Categoría:</label>
-                <select name="categoria" id="categoria">
+                <select class="select-pequeño" name="categoria" id="categoria">
                     <option value="">Todas</option>
                     <?php while ($cat = $categorias_result->fetch_assoc()): ?>
                         <option value="<?php echo $cat['ID_categoria']; ?>" <?php if ($categoria == $cat['ID_categoria']) echo 'selected'; ?>>
@@ -165,7 +163,7 @@ $has_banks = $bancos_result->num_rows > 0;
                 </select>
 
                 <label for="banco">Banco:</label>
-                <select name="banco" id="banco">
+                <select class="select-pequeño" name="banco" id="banco">
                     <option value="">Todos</option>
                     <?php 
                     // Reiniciar el puntero del resultado de bancos
@@ -183,7 +181,7 @@ $has_banks = $bancos_result->num_rows > 0;
                 <label for="fecha_fin">Hasta:</label>
                 <input type="date" name="fecha_fin" id="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>">
 
-                <button type="submit">Filtrar</button>
+                <button id="filtrar" type="submit">Filtrar</button>
             </form>
 
             <?php if ($has_banks): ?>
@@ -238,13 +236,13 @@ $has_banks = $bancos_result->num_rows > 0;
 
                     if ($pagina_actual > 1):
                     ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
                     <?php endif; ?>
 
                     <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
                     <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
                     <?php endif; ?>
                 </div>
 

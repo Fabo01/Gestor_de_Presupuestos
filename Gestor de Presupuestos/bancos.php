@@ -190,7 +190,6 @@ $result = $stmt->get_result();
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
@@ -234,21 +233,21 @@ $result = $stmt->get_result();
 
                 <div class="form-group">
                     <label for="nombre_banco">Nombre del Banco:</label>
-                    <input type="text" name="nombre_banco" placeholder="Escribe el nombre del banco" value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" required>
+                    <input class="input-banco" type="text" name="nombre_banco" placeholder="Escribe el nombre del banco" value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="tipo_cuenta">Tipo de Cuenta:</label>
-                    <input type="text" name="tipo_cuenta" placeholder="Ejemplo: Ahorros, Corriente" value="<?php echo htmlspecialchars($editar_tipo_cuenta); ?>" required>
+                    <input class="input-banco" type="text" name="tipo_cuenta" placeholder="Ejemplo: Ahorros, Corriente" value="<?php echo htmlspecialchars($editar_tipo_cuenta); ?>" required>
                 </div>
 
                 <div class="form-group">
                     <label for="nombre_cuenta">Nombre de la Cuenta:</label>
-                    <input type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
+                    <input class="input-banco" type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
                 </div>
 
                 <div class="button-group">
-                    <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
+                    <button class="boton-add-banco" type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
                 </div>
             </form>
         </section>
@@ -257,8 +256,8 @@ $result = $stmt->get_result();
         <section class="filter-section">
             <h3>Buscar Cuentas Bancarias</h3>
             <form method="GET" action="bancos.php" class="search-form">
-                <input type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
-                <button type="submit">Buscar</button>
+                <input class="filtrar-banco" type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
+                <button class="boton-filtrar-banco" type="submit">Buscar</button>
             </form>
         </section>
 
@@ -279,8 +278,8 @@ $result = $stmt->get_result();
                             <td><?php echo htmlspecialchars($row['tipo']); ?></td>
                             <td><?php echo htmlspecialchars($row['nombre']); ?></td>
                             <td>
-                                <a href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
-                                <a href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
+                                <a class="editar" href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
+                                <a class="eliminar" href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -295,13 +294,13 @@ $result = $stmt->get_result();
 
                     if ($pagina_actual > 1):
                     ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
                     <?php endif; ?>
 
                     <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
                     <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
                     <?php endif; ?>
                 </div>
             <?php else: ?>

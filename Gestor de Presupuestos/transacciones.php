@@ -101,48 +101,43 @@ $stmt_categorias->close();
 <head>
     <meta charset="UTF-8">
     <title>Crear Transacción</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/stylesss.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
-    <header class="navbar">
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
-        <div class="logo">
-            Gestor de Presupuestos
-        </div>
-
-        <nav class="nav">
-            <ul>
-                <li>
-                    <a href="ayuda.php">
-                        <button class="btn btn-boletines">Ayuda</button>
-                    </a>
-                </li>
-
-                <li>
-                    <div class="user-dropdown">
-                        <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($usuario); ?></span>
-                    </div>
-                </li>
-
-                <li><a href="perfil.php">Perfil</a></li>
-                <li><a href="logout.php">Cerrar Sesión</a></li>
-            </ul>
-        </nav>
-    </header>
+<header class="navbar">
+    <button id="menu-btn" class="menu-btn">&#9776;</button>
+    <div class="logo">
+        Gestor de Presupuestos
+    </div>
+    <nav class="nav">
+        <ul>
+            <li>
+                <a href="informacion.php">
+                    <button class="btn btn-boletines">Ayuda</button>
+                </a>
+            </li>
+            <li>
+                <div class="user-dropdown">
+                    <img src="img/user.jpg" alt="Perfil" class="user-avatar">
+                    <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                </div>
+            </li>
+            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="logout.php">Cerrar Sesión</a></li>
+        </ul>
+    </nav>
+</header>
 
     <aside id="sidebar" class="sidebar">
         <button id="close-btn" class="close-btn">&times;</button>
 
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
-            <li><a href="bancos.php">Bancos</a></li>
-            <li><a href="categorias.php">Categorías</a></li>
+            <li><a href="bancos.php">Tus Cuentas</a></li>
+            <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
@@ -157,11 +152,12 @@ $stmt_categorias->close();
         <?php if (!empty($error)): ?>
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
+        <section class="form-section">
 
         <form action="transacciones.php" method="POST" class="form-transaccion">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
 
-            <div class="form-group">
+            <div class="form-group-trans">
                 <label for="id_banco">Banco:</label>
                 <select name="id_banco" id="id_banco" required>
                     <option value="">Seleccione un banco</option>
@@ -173,12 +169,12 @@ $stmt_categorias->close();
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group-trans">
                 <label for="monto">Monto:</label>
                 <input type="number" step="0.01" name="monto" id="monto" placeholder="Monto de la transacción" required>
             </div>
 
-            <div class="form-group">
+            <div class="form-group-trans">
                 <label for="id_categoria">Categoría:</label>
                 <select name="id_categoria" id="id_categoria" required>
                     <option value="">Seleccione una categoría</option>
@@ -190,26 +186,27 @@ $stmt_categorias->close();
                 </select>
             </div>
 
-            <div class="form-group">
+            <div class="form-group-trans">
                 <label for="fecha">Fecha:</label>
                 <input type="date" name="fecha" id="fecha" value="<?php echo date('Y-m-d'); ?>" required>
             </div>
 
-            <div class="form-group">
+            <div class="form-group-trans">
                 <label for="descripcion">Descripción:</label>
                 <textarea name="descripcion" id="descripcion" rows="4" placeholder="Descripción de la transacción (opcional)"></textarea>
             </div>
 
-            <div class="button-group">
+            <div class="button-group-trans">
                 <button type="submit">Guardar Transacción</button>
             </div>
         </form>
+    </section>
     </main>
 
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="menu_lateral.js"></script>
+    <script src="JS/menu_lateral.js"></script>
 </body>
 </html>

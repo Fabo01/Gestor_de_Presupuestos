@@ -7,7 +7,7 @@ session_start();
 <head>
     <meta charset="UTF-8">
     <title>Información y Ayuda</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="CSS/style.css">
 </head>
 <body>
 
@@ -31,15 +31,8 @@ session_start();
                     <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
                 </div>
             </li>
-            <li>
-                <a href="perfil.php">
-                    <button class="btn btn-perfil">Perfil</button>
-                </a>
-            </li>
-            <li> 
-                <a href="logout.php">
-                    <button class="btn btn-logout">Cerrar Sesión</button>
-                </a></li>
+            <li><a href="perfil.php">Perfil</a></li>
+            <li><a href="logout.php">Cerrar Sesión</a></li>
             <?php else: ?>
                 <li><a href="index.php">Iniciar Sesión</a></li>
             <?php endif; ?>
@@ -57,7 +50,6 @@ session_start();
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 <?php endif; ?>
@@ -165,12 +157,138 @@ session_start();
     <!-- Sección Consejos Financieros -->
     <div id="consejos" class="tab-content" style="display: none;">
         <h2>Consejos Financieros</h2>
-        <ul>
-            <li><strong>Establece un Presupuesto:</strong> Define límites claros para tus gastos y ajústate a ellos.</li>
-            <li><strong>Ahorra Regularmente:</strong> Destina una parte de tus ingresos al ahorro cada mes.</li>
-            <li><strong>Evita Deudas Innecesarias:</strong> Maneja tus tarjetas de crédito con responsabilidad.</li>
-            <li><strong>Informa tus Decisiones:</strong> Investiga antes de realizar inversiones o grandes compras.</li>
-            <li><strong>Revisa tus Finanzas:</strong> Regularmente analiza tus ingresos y gastos para identificar áreas de mejora.</li>
+    <ul>
+        <h3>Elabora un presupuesto mensual</h3>
+            <p>
+            Crear un presupuesto mensual es la base de unas finanzas personales saludables. 
+            Este hábito te permite tener un panorama claro de cuánto dinero tienes, en qué lo estás gastando 
+            y cuánto puedes ahorrar. Dividir tus gastos en categorías como vivienda, alimentación, transporte, 
+            entretenimiento y ahorro te ayudará a identificar áreas donde puedes recortar y priorizar lo más importante. 
+            Además, al registrar tus ingresos y gastos, evitas sorpresas desagradables al final del mes 
+            y puedes planificar mejor tus metas financieras, como ahorrar para un viaje, pagar deudas o invertir.
+            </p>
+
+            <h3>Ahorrar al menos el 20% de tus ingresos</h3>
+            <p>
+            Ahorrar un porcentaje fijo de tus ingresos, idealmente al menos el 20%, es una estrategia 
+            fundamental para construir estabilidad financiera. Este ahorro puede destinarse a varios objetivos, 
+            como formar un fondo de emergencia, invertir en proyectos personales o asegurar tu futuro. 
+            El hábito del ahorro te prepara para imprevistos, como reparaciones del hogar, emergencias médicas 
+            o situaciones laborales complicadas. Aunque puede parecer difícil al principio, empezar con un porcentaje más bajo 
+            y aumentarlo gradualmente es una buena manera de adoptar este hábito sin sentirte limitado.
+            </p>
+
+            <h3>Evita gastar más de lo que ganas</h3>
+            <p>
+            Gastar más de tus ingresos lleva inevitablemente al endeudamiento, lo que puede ser un círculo difícil de romper. 
+            Vivir dentro de tus posibilidades financieras no solo reduce el estrés relacionado con el dinero, 
+            sino que también te permite mantener un mejor control sobre tu vida. Para lograrlo, analiza tus hábitos de consumo 
+            y ajusta tus gastos para que se alineen con tu ingreso mensual. Si descubres que tu estilo de vida supera tus ingresos, 
+            considera opciones como renegociar tus gastos, buscar ingresos adicionales o ajustar tus expectativas de consumo.
+            </p>
+
+            <h3>Invierte una parte de tus ingresos</h3>
+            <p>
+            Invertir es una manera efectiva de hacer crecer tu dinero a largo plazo. A través de vehículos como acciones, 
+            fondos mutuos, bienes raíces o incluso emprendimientos, puedes generar ingresos pasivos y aumentar tu patrimonio. 
+            El poder del interés compuesto significa que cuanto antes empieces a invertir, mayores serán tus ganancias 
+            en el futuro. Sin embargo, antes de invertir, es crucial educarte sobre los riesgos y elegir opciones 
+            que se ajusten a tu perfil financiero y metas personales.
+            </p>
+
+            <h3>Crea un fondo de emergencia</h3>
+            <p>
+            Un fondo de emergencia es un colchón financiero que te protege en momentos de crisis, como perder tu empleo, 
+            enfrentar una emergencia médica o reparar tu automóvil. Este fondo debe ser accesible pero separado de tus cuentas 
+            diarias para evitar gastarlo en cosas innecesarias. Un buen objetivo inicial es ahorrar el equivalente 
+            a 3-6 meses de tus gastos básicos. Esto te dará tranquilidad y tiempo para recuperarte sin endeudarte.
+            </p>
+
+            <h3>Limita el uso de tarjetas de crédito</h3>
+            <p>
+            Las tarjetas de crédito son una herramienta útil, pero también pueden ser peligrosas si no se usan con cuidado. 
+            Es importante que solo las utilices para gastos que puedes pagar al final del mes, evitando intereses altos. 
+            El mal uso de las tarjetas puede llevarte a una espiral de deudas que afecta tu historial crediticio y 
+            te dificulta acceder a préstamos en el futuro. Si tienes varias tarjetas, prioriza pagar aquellas con tasas de interés más altas.
+            </p>
+
+            <h3>Registra tus gastos diarios</h3>
+            <p>
+            Registrar tus gastos diarios es una práctica poderosa para entender exactamente a dónde va tu dinero. 
+            Muchas veces, los pequeños gastos, como un café diario o compras impulsivas, se acumulan y representan 
+            una parte significativa de tus finanzas. Al monitorear tus gastos, puedes identificar patrones y ajustar tu comportamiento 
+            para priorizar lo esencial y ahorrar más. Puedes usar aplicaciones móviles, hojas de cálculo o incluso un cuaderno para llevar este control.
+            </p>
+
+            <h3>Aprende a diferenciar entre "necesidades" y "deseos"</h3>
+            <p>
+            Saber distinguir entre lo que necesitas y lo que simplemente deseas es clave para tomar decisiones financieras inteligentes. 
+            Las necesidades son cosas esenciales para tu vida diaria, como alimentos, vivienda y transporte, mientras que los deseos son 
+            aquellos extras que mejoran tu calidad de vida, pero no son imprescindibles. Reducir los gastos en deseos innecesarios te permite 
+            canalizar más dinero hacia metas importantes, como el ahorro, la inversión o el pago de deudas.
+            </p>
+
+            <h3>Planifica tus compras</h3>
+            <p>
+            Antes de realizar cualquier compra, especialmente las grandes, es importante planificar y comparar opciones. 
+            Hacer listas de compras y establecer un presupuesto específico para cada gasto te ayuda a evitar comprar por impulso 
+            y a aprovechar promociones y descuentos. Esto no solo te permite ahorrar dinero, sino también gastar de manera más consciente y efectiva.
+            </p>
+
+            <h3>Automatiza tus ahorros</h3>
+            <p>
+            La automatización es una excelente manera de asegurarte de que el ahorro sea una prioridad en tu vida financiera. 
+            Configura transferencias automáticas desde tu cuenta corriente a tu cuenta de ahorros inmediatamente después de recibir tu salario. 
+            Esto elimina la tentación de gastar ese dinero y te ayuda a construir un fondo sólido de manera consistente sin esfuerzo adicional.
+            </p>
+
+            <h3>Educa tus finanzas</h3>
+            <p>
+            La educación financiera es una inversión en ti mismo. Cuanto más sepas sobre temas como ahorro, inversiones, 
+            créditos e impuestos, mejores decisiones podrás tomar. Esto no solo te ayuda a maximizar tus recursos, 
+            sino que también te da herramientas para enfrentar situaciones complejas, como negociar un préstamo o invertir con confianza.
+            </p>
+
+            <h3>Revisa regularmente tus suscripciones</h3>
+            <p>
+            Muchas personas tienen suscripciones a servicios que no usan frecuentemente, como plataformas de streaming, gimnasios o aplicaciones. 
+            Revisar estas suscripciones periódicamente te permite cancelar las innecesarias y liberar dinero que puedes usar para otros propósitos. 
+            Esto puede parecer un cambio pequeño, pero a largo plazo suma una cantidad significativa.
+            </p>
+
+            <h3>Prioriza pagar deudas de interés alto</h3>
+            <p>
+            Las deudas con intereses altos, como las tarjetas de crédito o préstamos personales, pueden convertirse en una gran carga financiera 
+            si no se abordan rápidamente. Prioriza pagarlas para reducir el dinero que pierdes en intereses y mejora tu salud financiera. 
+            Puedes usar estrategias como el método de bola de nieve o avalancha para abordar tus deudas de manera eficiente.
+            </p>
+
+            <h3>Planifica tu jubilación desde joven</h3>
+            <p>
+            Aunque la jubilación pueda parecer algo lejano, cuanto antes comiences a planificarla, más fácil será lograr un retiro cómodo. 
+            Aprovecha instrumentos de ahorro e inversión, como cuentas de pensión, y contribuye regularmente para que el interés compuesto 
+            haga crecer tu dinero con el tiempo. Un pequeño esfuerzo ahora puede marcar una gran diferencia en el futuro.
+            </p>
+
+            <h3>Diversifica tus fuentes de ingreso</h3>
+            <p>
+            Tener más de una fuente de ingreso, como un segundo trabajo, inversiones o emprendimientos, te brinda mayor seguridad económica 
+            y te permite alcanzar tus metas financieras más rápidamente. Además, si alguna de tus fuentes de ingreso falla, tendrás otras 
+            que puedan respaldarte.
+            </p>
+
+            <h3>Revisa tu estado financiero regularmente</h3>
+            <p>
+            Hacer una revisión periódica de tu estado financiero te permite evaluar si estás cumpliendo con tus metas, identificar áreas de mejora 
+            y ajustar tus estrategias según sea necesario. Este hábito te mantiene enfocado y te ayuda a evitar problemas antes de que se vuelvan graves.
+            </p>
+
+            <h3>Evita avalar deudas</h3>
+            <p>
+            Avalar una deuda significa asumir la responsabilidad si la persona principal no puede pagarla. Esto pone en riesgo tu estabilidad financiera 
+            y tu relación con esa persona. Es mejor buscar otras maneras de apoyar a alguien sin comprometer tus propias finanzas.
+            </p>
+
         </ul>
     </div>
 </main>
@@ -179,7 +297,7 @@ session_start();
     <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
 </footer>
 
-<script src="js/menu_lateral.js"></script>
-<script src="js/informacion.js"></script>
+<script src="JS/menu_lateral.js"></script>
+<script src="JS/informacion.js"></script>
 </body>
 </html>

@@ -176,62 +176,72 @@ $result = $stmt->get_result();
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
     <main>
 
-        <h3><?php echo isset($_GET['editar']) ? 'Editar Categoría' : 'Añadir una nueva categoría'; ?></h3>
+        <section class="form-section">
+            <h3><?php echo isset($_GET['editar']) ? 'Editar Categoría' : 'Añadir una nueva categoría'; ?></h3>
 
-        <!-- Mostrar mensajes de éxito o error -->
-        <?php if (!empty($mensaje)): ?>
-            <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
-        <?php endif; ?>
+            <!-- Mostrar mensajes de éxito o error -->
+            <?php if (!empty($mensaje)): ?>
+                <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
+            <?php endif; ?>
 
-        <?php if (!empty($error)): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
+            <?php if (!empty($error)): ?>
+                <div class="error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
 
-        <?php
-        // Si se está editando una categoría, obtener sus datos
-        $editar_nombre = '';
-        $editar_tipo = '';
-        $id_categoria_editar = 0;
+            <?php
+            // Si se está editando una categoría, obtener sus datos
+            $editar_nombre = '';
+            $editar_tipo = '';
+            $id_categoria_editar = 0;
 
-        if (isset($_GET['editar'])) {
-            $id_categoria_editar = intval($_GET['editar']);
-            $stmt_editar = $db->prepare("SELECT nombre, tipo FROM Categorias WHERE ID_categoria = ? AND ID_usuario = ?");
-            $stmt_editar->bind_param('ii', $id_categoria_editar, $user_id);
-            $stmt_editar->execute();
-            $stmt_editar->bind_result($editar_nombre, $editar_tipo);
-            $stmt_editar->fetch();
-            $stmt_editar->close();
-        }
-        ?>
+            if (isset($_GET['editar'])) {
+                $id_categoria_editar = intval($_GET['editar']);
+                $stmt_editar = $db->prepare("SELECT nombre, tipo FROM Categorias WHERE ID_categoria = ? AND ID_usuario = ?");
+                $stmt_editar->bind_param('ii', $id_categoria_editar, $user_id);
+                $stmt_editar->execute();
+                $stmt_editar->bind_result($editar_nombre, $editar_tipo);
+                $stmt_editar->fetch();
+                $stmt_editar->close();
+            }
+            ?>
 
-        <form action="categorias.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-            <input type="hidden" name="id_categoria" value="<?php echo $id_categoria_editar; ?>">
+            <form class="form-style" action="categorias.php" method="POST">
 
-            <label for="nombre_categoria">Nombre de la Categoría: </label>
-            <input type="text" name="nombre_categoria" placeholder="Asigne un nombre a la categoría" value="<?php echo htmlspecialchars($editar_nombre); ?>" required>
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                <input type="hidden" name="id_categoria" value="<?php echo $id_categoria_editar; ?>">
 
-            <label for="tipo">Tipo: </label>
-            <select name="tipo" required>
-                <option value="">Seleccione</option>
-                <option value="ingreso" <?php if ($editar_tipo == 'ingreso') echo 'selected'; ?>>Ingreso</option>
-                <option value="gasto" <?php if ($editar_tipo == 'gasto') echo 'selected'; ?>>Gasto</option>
-            </select>
+            <div class="form-group">
+                <label for="nombre_categoria">Nombre de la Categoría: </label>
+                <input class="input-banco" type="text" name="nombre_categoria" placeholder="Asigne un nombre a la categoría" value="<?php echo htmlspecialchars($editar_nombre); ?>" required>
+            </div>
 
-            <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Categoría' : 'Añadir Categoría'; ?></button>
-        </form>
+            <div class="form-group">
+                <label for="tipo">Tipo: </label>
+                <select class="input-banco" name="tipo" required>
+                    <option value="">Seleccione</option>
+                    <option value="ingreso" <?php if ($editar_tipo == 'ingreso') echo 'selected'; ?>>Ingreso</option>
+                    <option value="gasto" <?php if ($editar_tipo == 'gasto') echo 'selected'; ?>>Gasto</option>
+                </select>
+            </div>
 
-        <!-- Barra de búsqueda -->
-        <form method="GET" action="categorias.php" class="search-form">
-            <input type="text" name="buscar" placeholder="Buscar categoría" value="<?php echo htmlspecialchars($buscar); ?>">
-            <button type="submit">Buscar</button>
-        </form>
+            <div class="button-group">
+                <button class="boton-add-banco" type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Categoría' : 'Añadir Categoría'; ?></button>
+            </div>
+            </form>
+        </section>
+
+        <section class="filter-section">
+            <!-- Barra de búsqueda -->
+            <form method="GET" action="categorias.php" class="search-form">
+                <input class="filtrar-banco" type="text" name="buscar" placeholder="Buscar categoría" value="<?php echo htmlspecialchars($buscar); ?>">
+                <button class="boton-filtrar-banco" type="submit">Buscar</button>
+            </form>
+        </section>
 
         <div class="container-gestion">
             <h3>Mis Categorías</h3>
@@ -262,13 +272,13 @@ $result = $stmt->get_result();
 
                 if ($pagina_actual > 1):
                 ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                    <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
                 <?php endif; ?>
 
                 <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
                 <?php if ($pagina_actual < $total_paginas): ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                    <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
                 <?php endif; ?>
             </div>
         </div>
