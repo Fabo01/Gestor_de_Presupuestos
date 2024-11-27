@@ -94,6 +94,10 @@ $bancos_stmt = $db->prepare("SELECT ID_banco, banco FROM Cuentas_de_banco WHERE 
 $bancos_stmt->bind_param('i', $user_id);
 $bancos_stmt->execute();
 $bancos_result = $bancos_stmt->get_result();
+
+// Verificar si el usuario tiene bancos vinculados
+$has_banks = $bancos_result->num_rows > 0;
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -101,7 +105,6 @@ $bancos_result = $bancos_stmt->get_result();
     <meta charset="UTF-8">
     <title>Dashboard - Gestor de Presupuestos</title>
     <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/styless.css">
 </head>
 <body>
 
@@ -120,7 +123,7 @@ $bancos_result = $bancos_stmt->get_result();
                 <li>
                     <div class="user-dropdown">
                         <img src="img/user.jpg" alt="Perfil" class="user-avatar">
-                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                        <span>Usuario: <?php echo htmlspecialchars($_SESSION['usuario']); ?></span>
                     </div>
                 </li>
                 <li><a href="perfil.php">Perfil</a></li>
@@ -138,12 +141,11 @@ $bancos_result = $bancos_stmt->get_result();
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
     <main>
-        <h2>Bienvenido, <?php echo htmlspecialchars($usuario); ?></h2>
+        <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['nombre']); ?></h2>
         <div class="container-gestion">
 
             <h3>Resumen de Transacciones</h3>
@@ -151,7 +153,7 @@ $bancos_result = $bancos_stmt->get_result();
             <!-- Formulario de Filtros -->
             <form method="GET" action="dashboard.php" class="filter-form">
                 <label for="categoria">Categoría:</label>
-                <select name="categoria" id="categoria">
+                <select class="select-pequeño" name="categoria" id="categoria">
                     <option value="">Todas</option>
                     <?php while ($cat = $categorias_result->fetch_assoc()): ?>
                         <option value="<?php echo $cat['ID_categoria']; ?>" <?php if ($categoria == $cat['ID_categoria']) echo 'selected'; ?>>
@@ -161,9 +163,12 @@ $bancos_result = $bancos_stmt->get_result();
                 </select>
 
                 <label for="banco">Banco:</label>
-                <select name="banco" id="banco">
+                <select class="select-pequeño" name="banco" id="banco">
                     <option value="">Todos</option>
-                    <?php while ($ban = $bancos_result->fetch_assoc()): ?>
+                    <?php 
+                    // Reiniciar el puntero del resultado de bancos
+                    $bancos_result->data_seek(0);
+                    while ($ban = $bancos_result->fetch_assoc()): ?>
                         <option value="<?php echo $ban['ID_banco']; ?>" <?php if ($banco == $ban['ID_banco']) echo 'selected'; ?>>
                             <?php echo htmlspecialchars($ban['banco']); ?>
                         </option>
@@ -176,14 +181,24 @@ $bancos_result = $bancos_stmt->get_result();
                 <label for="fecha_fin">Hasta:</label>
                 <input type="date" name="fecha_fin" id="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>">
 
-                <button type="submit">Filtrar</button>
+                <button id="filtrar" type="submit">Filtrar</button>
             </form>
 
-            <div class="btn-banco-container">
-                <a href="transacciones.php">
-                    <button class="btn btn-banco">Añadir Transacción</button>
-                </a>
-            </div> 
+            <?php if ($has_banks): ?>
+                <div class="btn-banco-container">
+                    <a href="transacciones.php">
+                        <button class="btn btn-banco">Añadir Transacción</button>
+                    </a>
+                </div>
+            <?php else: ?>
+                <!-- Mostrar el botón cuando no tiene bancos vinculados -->
+                <div class="btn-banco-container">
+                    <p>No tienes cuentas bancarias vinculadas. Para comenzar a registrar tus transacciones, por favor añade una cuenta bancaria.</p>
+                    <a href="bancos.php">
+                        <button class="btn btn-banco">Añadir Cuenta Bancaria</button>
+                    </a>
+                </div>
+            <?php endif; ?>
 
             <?php if ($result->num_rows > 0): ?>
                 <table>
@@ -221,13 +236,13 @@ $bancos_result = $bancos_stmt->get_result();
 
                     if ($pagina_actual > 1):
                     ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
                     <?php endif; ?>
 
                     <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
                     <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
                     <?php endif; ?>
                 </div>
 

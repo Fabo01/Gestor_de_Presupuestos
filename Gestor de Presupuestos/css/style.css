@@ -106,7 +106,7 @@ body, html {
 /* Main Content */
 main {
     padding: 20px;
-    max-width: 900px;
+    max-width: 1300px;
     margin: 40px auto;
 }
 
@@ -180,4 +180,312 @@ footer {
     text-align: center;
     font-size: 12px;
     color: #777;
+}
+
+/*Desde aqui agregue volas nuevas rumy*/
+select{
+    border-radius: 5px;
+    box-shadow: 1px 1px 4px rgb(211, 208, 208);
+    background-color: #f1efef;
+    padding: 5px;
+    border: none;
+    appearance: none;
+    cursor: pointer;
+    color: #3d3d3d;
+    text-shadow: 0.5px 0.5px rgb(196, 187, 187)
+    
+}
+  
+  select:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .select-pequeño{
+    width: 10%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 4px rgb(211, 208, 208);
+    background-color: #f1efef;
+    padding: 5px;
+    border: none;
+    appearance: none;
+    cursor: pointer;
+    color: #3d3d3d;
+    text-shadow: 0.5px 0.5px rgb(196, 187, 187)
+    
+}
+
+.filter-form {
+    margin: 5px;
+    text-shadow: 0.5px 0.5px rgb(184, 184, 184)
+}
+
+.filter-form label{
+    margin: 5px;
+}
+
+input[type="date"]{
+    padding: 4px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 4px grey;
+    background-color: #e9e9e9;
+    border: none;
+    cursor: pointer;
+    color: #3d3d3d;
+    text-shadow: 0.5px 0.5px rgb(184, 184, 184)
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .form-section {
+    width: 100%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.form-style {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(33% - 10px);
+    min-width: 200px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.input-banco {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.button-group {
+    flex: 1 1 auto;
+    text-align: right;
+    margin-top: 10px;
+}
+
+.boton-add-banco {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.boton-add-banco:hover {
+    background-color: #0056b3;
+}
+
+
+.filter-section{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+#filtrar{
+    padding: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 10px;
+
+    border: none;
+    box-shadow: 1px 1.5px #d4d1d1;
+}
+
+
+
+.tab-content{
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    text-align: justify;
+}
+
+.tab-content p{
+    color: #525050;
+    margin: 5px;
+    margin-bottom: 20px;
+    margin-top: 15px;
+    text-shadow: 0.5px 0.8px rgb(184, 184, 184)
+}
+
+.tab-content h2, h3{
+    margin: 5px;
+    text-shadow: 0.5px 0.8px rgb(184, 184, 184)
+}
+
+.tab-button{
+    padding: 10px 20px;
+    border: 2px solid #535252af;
+    color: #474444;
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover{
+    background-color: #414242;
+    color: #fff;
+}
+
+.salto-pagina{
+    text-decoration: none;
+    padding: 4px;
+    color: #e7e7e7;
+    background-color: #818385;
+    border-radius: 4px;
+}
+
+.salto-pagina:hover{
+    color: #d4d2d2;
+    background-color: #2d2e30;
+
+}
+
+#titulo, #contenido{
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.btn-crear-articulo{
+    background-color: #527253; /* Verde musgo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    width: 100%;
+}
+
+.btn-crear-articulo:hover {
+    background-color: #6a8b6d; /* Verde más claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Incrementa la sombra */
+}
+
+.filtrar-banco {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box; /* Evitar que el padding afecte el tamaño */
+    margin-bottom: 15px; /* Espacio entre los campos */
+}
+
+.boton-filtrar-banco {
+    width: 20%;
+    padding: 10px;
+    background-color: rgba(0, 34, 184, 0.651);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.list-section{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.list-section .eliminar{
+    text-decoration: none;
+
+    color: rgb(219, 80, 16);
+}
+.list-section .eliminar:hover{
+    text-decoration: none;
+
+    color: rgb(241, 87, 16);
+}
+
+.list-section .editar{
+    text-decoration: none;
+
+    color: rgb(71, 71, 70);
+}
+
+.list-section .editar:hover{
+    text-decoration: none;
+
+    color: rgb(44, 44, 44);
+}
+
+.link-volver{
+    text-decoration: none;
+    color: #686565;
+}
+
+.button-group-trans button {
+    background-color: #527253; /* Verde musgo */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    width: 100%;
+}
+
+.button-group-trans button:hover {
+    background-color: #6a8b6d; /* Verde más claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Incrementa la sombra */
+}
+
+.form-group-trans input, select, textarea{
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    font-size: 14px;
+    color: #333;
+    box-sizing: border-box;
+    margin-bottom: 15px;
 }

@@ -21,12 +21,17 @@ if (empty($_SESSION['token'])) {
 }
 $token = $_SESSION['token'];
 
+/* ==========================================================
+   PROCESAR FORMULARIOS
+========================================================== */
+
 // Procesar formulario de creación o edición de banco
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar token CSRF
     if (!isset($_POST['token']) || !hash_equals($_SESSION['token'], $_POST['token'])) {
         $error = "Token CSRF inválido.";
     } else {
+        // Lógica para crear o editar una cuenta bancaria
         $nombre_banco = trim($_POST['nombre_banco']);
         $tipo_cuenta = trim($_POST['tipo_cuenta']);
         $nombre_cuenta = trim($_POST['nombre_cuenta']);
@@ -86,6 +91,10 @@ if (isset($_GET['eliminar'])) {
     $stmt_delete->close();
 }
 
+/* ==========================================================
+   OBTENER DATOS PARA EL FILTRO Y LA LISTA
+========================================================== */
+
 // Parámetros de búsqueda y paginación
 $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
 $bancos_por_pagina = 10;
@@ -143,12 +152,12 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Gestión de Bancos</title>
     <link rel="stylesheet" href="CSS/style.css">
-    <link rel="stylesheet" href="CSS/intro_datos.css">
 </head>
 <body>
 
+    <!-- HEADER -->
     <header class="navbar">
-        <button id="menu-btn" class="menu-btn">&#9776;</button>
+    <button id="menu-btn" class="menu-btn">&#9776;</button>
         <div class="logo">
             Gestor de Presupuestos
         </div>
@@ -171,8 +180,9 @@ $result = $stmt->get_result();
         </nav>
     </header>
 
+    <!-- SIDEBAR -->
     <aside id="sidebar" class="sidebar">
-        <button id="close-btn" class="close-btn">&times;</button>
+    <button id="close-btn" class="close-btn">&times;</button>
 
         <ul>
             <li><a href="dashboard.php">Inicio</a></li>
@@ -180,15 +190,13 @@ $result = $stmt->get_result();
             <li><a href="categorias.php">Tus Categorías</a></li>
             <li><a href="articulos.php">Ver Artículos</a></li>
             <li><a href="estadisticas.php">Estadísticas</a></li>
-            <li><a href="logros.php">Logros</a></li>
         </ul>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main>
 
-        <h3><?php echo isset($_GET['editar']) ? 'Editar Cuenta Bancaria' : 'Añadir una nueva cuenta bancaria'; ?></h3>
-
-        <!-- Mostrar mensajes de éxito o error -->
+        <!-- MENSAJES DE ÉXITO O ERROR -->
         <?php if (!empty($mensaje)): ?>
             <div class="mensaje"><?php echo htmlspecialchars($mensaje); ?></div>
         <?php endif; ?>
@@ -197,90 +205,112 @@ $result = $stmt->get_result();
             <div class="error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
-        <?php
-        // Si se está editando una cuenta bancaria, obtener sus datos
-        $editar_nombre_banco = '';
-        $editar_tipo_cuenta = '';
-        $editar_nombre_cuenta = '';
-        $id_banco_editar = 0;
+        <!-- FORMULARIO PARA AÑADIR O EDITAR CUENTA BANCARIA -->
+        <section class="form-section">
+            <h3><?php echo isset($_GET['editar']) ? 'Editar Cuenta Bancaria' : 'Añadir una nueva cuenta bancaria'; ?></h3>
 
-        if (isset($_GET['editar'])) {
-            $id_banco_editar = intval($_GET['editar']);
-            $stmt_editar = $db->prepare("SELECT banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_banco = ? AND ID_usuario = ?");
-            $stmt_editar->bind_param('ii', $id_banco_editar, $user_id);
-            $stmt_editar->execute();
-            $stmt_editar->bind_result($editar_nombre_banco, $editar_tipo_cuenta, $editar_nombre_cuenta);
-            $stmt_editar->fetch();
-            $stmt_editar->close();
-        }
-        ?>
+            <?php
+            // Si se está editando una cuenta bancaria, obtener sus datos
+            $editar_nombre_banco = '';
+            $editar_tipo_cuenta = '';
+            $editar_nombre_cuenta = '';
+            $id_banco_editar = 0;
 
-        <form action="bancos.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-            <input type="hidden" name="id_banco" value="<?php echo $id_banco_editar; ?>">
+            if (isset($_GET['editar'])) {
+                $id_banco_editar = intval($_GET['editar']);
+                $stmt_editar = $db->prepare("SELECT banco, tipo, nombre FROM Cuentas_de_banco WHERE ID_banco = ? AND ID_usuario = ?");
+                $stmt_editar->bind_param('ii', $id_banco_editar, $user_id);
+                $stmt_editar->execute();
+                $stmt_editar->bind_result($editar_nombre_banco, $editar_tipo_cuenta, $editar_nombre_cuenta);
+                $stmt_editar->fetch();
+                $stmt_editar->close();
+            }
+            ?>
 
-            <label for="nombre_banco">Nombre del Banco: </label>
-            <input type="text" name="nombre_banco" placeholder="Escribe el nombre del banco" value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" required>
+            <form action="bancos.php" method="POST" class="form-style">
+                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                <input type="hidden" name="id_banco" value="<?php echo $id_banco_editar; ?>">
 
-            <label for="tipo_cuenta">Tipo de Cuenta: </label>
-            <input type="text" name="tipo_cuenta" placeholder="Ejemplo: Ahorros, Corriente" value="<?php echo htmlspecialchars($editar_tipo_cuenta); ?>" required>
+                <div class="form-group">
+                    <label for="nombre_banco">Nombre del Banco:</label>
+                    <input class="input-banco" type="text" name="nombre_banco" placeholder="Escribe el nombre del banco" value="<?php echo htmlspecialchars($editar_nombre_banco); ?>" required>
+                </div>
 
-            <label for="nombre_cuenta">Nombre de la Cuenta: </label>
-            <input type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
+                <div class="form-group">
+                    <label for="tipo_cuenta">Tipo de Cuenta:</label>
+                    <input class="input-banco" type="text" name="tipo_cuenta" placeholder="Ejemplo: Ahorros, Corriente" value="<?php echo htmlspecialchars($editar_tipo_cuenta); ?>" required>
+                </div>
 
-            <button type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
-        </form>
+                <div class="form-group">
+                    <label for="nombre_cuenta">Nombre de la Cuenta:</label>
+                    <input class="input-banco" type="text" name="nombre_cuenta" placeholder="Asigna un nombre a la cuenta" value="<?php echo htmlspecialchars($editar_nombre_cuenta); ?>" required>
+                </div>
 
-        <!-- Barra de búsqueda -->
-        <form method="GET" action="bancos.php" class="search-form">
-            <input type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
-            <button type="submit">Buscar</button>
-        </form>
+                <div class="button-group">
+                    <button class="boton-add-banco" type="submit"><?php echo isset($_GET['editar']) ? 'Actualizar Cuenta Bancaria' : 'Añadir Cuenta Bancaria'; ?></button>
+                </div>
+            </form>
+        </section>
 
-        <div class="container-gestion">
+        <!-- FILTRO DE BÚSQUEDA -->
+        <section class="filter-section">
+            <h3>Buscar Cuentas Bancarias</h3>
+            <form method="GET" action="bancos.php" class="search-form">
+                <input class="filtrar-banco" type="text" name="buscar" placeholder="Buscar banco o cuenta" value="<?php echo htmlspecialchars($buscar); ?>">
+                <button class="boton-filtrar-banco" type="submit">Buscar</button>
+            </form>
+        </section>
+
+        <!-- LISTA DE CUENTAS BANCARIAS -->
+        <section class="list-section">
             <h3>Mis Cuentas Bancarias</h3>
-            <table>
-                <tr>
-                    <th>Banco</th>
-                    <th>Tipo</th>
-                    <th>Nombre de la Cuenta</th>
-                    <th>Acciones</th>
-                </tr>
-                <?php while ($row = $result->fetch_assoc()): ?>
+            <?php if ($result->num_rows > 0): ?>
+                <table>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['banco']); ?></td>
-                        <td><?php echo htmlspecialchars($row['tipo']); ?></td>
-                        <td><?php echo htmlspecialchars($row['nombre']); ?></td>
-                        <td>
-                            <a href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
-                            <a href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
-                        </td>
+                        <th>Banco</th>
+                        <th>Tipo</th>
+                        <th>Nombre de la Cuenta</th>
+                        <th>Acciones</th>
                     </tr>
-                <?php endwhile; ?>
-            </table>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['banco']); ?></td>
+                            <td><?php echo htmlspecialchars($row['tipo']); ?></td>
+                            <td><?php echo htmlspecialchars($row['nombre']); ?></td>
+                            <td>
+                                <a class="editar" href="bancos.php?editar=<?php echo $row['ID_banco']; ?>">Editar</a> |
+                                <a class="eliminar" href="bancos.php?eliminar=<?php echo $row['ID_banco']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta cuenta bancaria?');">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </table>
 
-            <!-- Paginación -->
-            <div class="pagination">
-                <?php
-                $query_params = $_GET;
-                unset($query_params['pagina']);
-                $base_url = '?' . http_build_query($query_params);
+                <!-- Paginación -->
+                <div class="pagination">
+                    <?php
+                    $query_params = $_GET;
+                    unset($query_params['pagina']);
+                    $base_url = '?' . http_build_query($query_params);
 
-                if ($pagina_actual > 1):
-                ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
-                <?php endif; ?>
+                    if ($pagina_actual > 1):
+                    ?>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual - 1); ?>">&laquo; Anterior</a>
+                    <?php endif; ?>
 
-                <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
+                    <span>Página <?php echo $pagina_actual; ?> de <?php echo $total_paginas; ?></span>
 
-                <?php if ($pagina_actual < $total_paginas): ?>
-                    <a href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
-                <?php endif; ?>
-            </div>
-        </div>
+                    <?php if ($pagina_actual < $total_paginas): ?>
+                        <a class="salto-pagina" href="<?php echo $base_url . '&pagina=' . ($pagina_actual + 1); ?>">Siguiente &raquo;</a>
+                    <?php endif; ?>
+                </div>
+            <?php else: ?>
+                <p>No se encontraron cuentas bancarias.</p>
+            <?php endif; ?>
+        </section>
 
     </main>
 
+    <!-- FOOTER -->
     <footer>
         <p>&copy; Gestor de Presupuestos 2024. Todos los derechos reservados.</p>
     </footer>
